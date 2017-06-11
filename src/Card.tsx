@@ -16,15 +16,16 @@ export default class Card extends React.Component<CardProps, null> {
   }
 
   render() {
+    // <div className="description">
+    //   <p>{this.props.color}</p>
+    //   <p>{this.props.shading}</p>
+    //   <p>{this.props.shape}</p>
+    //   <p>{this.props.number}</p>
+    // </div>
     return (
-      <div className={`ui card ${ this.props.selected ? 'blue' : null}`}>
+      <div className={`ui card ${ this.props.selected ? 'blue' : ''}`}>
         <div className="content">
-          <div className="description">
-            <p>{this.props.color}</p>
-            <p>{this.props.shading}</p>
-            <p>{this.props.shape}</p>
-            <p>{this.props.number}</p>
-          </div>
+          <div className={`symbol ${this.props.shape} ${this.props.shading}`} />
         </div>
       </div>
     );

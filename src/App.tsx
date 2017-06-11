@@ -79,24 +79,32 @@ export default class App extends React.Component<Props, State> {
   }
 
   verifySet() {
-    if (this.state.selectedIds.length < 3 ) {
+    // clear board
+    const board = this.state.board;
+    const selectedIds = this.state.selectedIds;
+    this.state.selectedIds.forEach((id) => {
+      board[id].selected = false;
+    });
+    this.setState({board, selectedIds: []});
+
+    // ensure right num cards selected
+    if (selectedIds.length < 3 ) {
       alert('not set');
       return;
     }
+
     const attributes = ['color', 'shading', 'shape', 'number'];
-    const selectedCards = this.state.selectedIds.map((id) => {
+    const selectedCards = selectedIds.map((id) => {
       return this.state.board[id];
     });
+
+    // check for set
     for (let i = 0; i < attributes.length; i++) {
-      if (!(this.areAttributesEqual([
-        selectedCards[0][attributes[i]],
-        selectedCards[1][attributes[i]],
-        selectedCards[2][attributes[i]]
-      ]) || this.areAttributesNotEqual ([
-        selectedCards[0][attributes[i]],
-        selectedCards[1][attributes[i]],
-        selectedCards[2][attributes[i]]
-      ]))) {
+      const attributeValues = selectedCards.map((card) => {
+        return card[attributes[i]];
+      });
+      if (!(this.areAttributesEqual(attributeValues) ||
+            this.areAttributesNotEqual (attributeValues))) {
         alert(`not set ${attributes[i]} no good`);
         return false;
       }
