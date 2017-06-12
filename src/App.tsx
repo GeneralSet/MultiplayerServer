@@ -7,6 +7,7 @@ interface Props {}
 interface State {
   board: CardProps[];
   selectedIds: number[];
+  alert: string;
 }
 
 export default class App extends React.Component<Props, State> {
@@ -15,7 +16,8 @@ export default class App extends React.Component<Props, State> {
     super(props);
     this.state = {
       board: this.initBoard(),
-      selectedIds: []
+      selectedIds: [],
+      alert: ''
     };
     this.verifySet = this.verifySet.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
@@ -50,13 +52,8 @@ export default class App extends React.Component<Props, State> {
     if (!board[index].selected) {
       selectedIds.push(index);
     }
-    if (selectedIds.length > 3) {
-      const oldestId = selectedIds.shift();
-      if (oldestId === undefined || !board[oldestId].selected) {
-        console.error('ERROR: selected ids queue has run a muck');
-        return;
-      }
-      board[oldestId].selected = false;
+    if (selectedIds.length >= 3) {
+      this.verifySet();
     }
     board[index].selected = !board[index].selected;
     this.setState({board, selectedIds});
@@ -97,7 +94,7 @@ export default class App extends React.Component<Props, State> {
     this.clearSelection();
     // ensure right num cards selected
     if (selectedIds.length < 3 ) {
-      alert('not set');
+      this.setState({alert: 'Error: not enough cards selected'});
       return;
     }
 
@@ -113,11 +110,11 @@ export default class App extends React.Component<Props, State> {
       });
       if (!(this.areAttributesEqual(attributeValues) ||
             this.areAttributesNotEqual (attributeValues))) {
-        alert(`not set ${attributes[i]} no good`);
+        this.setState({alert: `not set ${attributes[i]} no good`});
         return false;
       }
     }
-    alert('set');
+    this.setState({alert: `Set!`});
     return true;
   }
 
@@ -125,9 +122,8 @@ export default class App extends React.Component<Props, State> {
     return (
       <div className="App">
       <div className="title-bar">
-        <button className="ui primary button" onClick={this.verifySet}>Set!</button>
-        <button className="ui button" onClick={this.clearSelection}>Clear</button>
-        <span className="error">Error</span>
+        <button className="ui button" onClick={this.clearSelection}>Clear selection</button>
+        <span className="error">{this.state.alert}</span>
       </div>
         {this.state.board.map((card: CardProps, i: number) => {
           return (

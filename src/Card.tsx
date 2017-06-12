@@ -99,12 +99,12 @@ export default class Card extends React.Component<CardProps, null> {
 
   kidney() {
     return (
-      <div>
+      <div style={{width: this.symbolWidth + 10}}>
         <svg width="100%" height="100%" viewBox="0 0 1860 3880">
           <defs>
             {this.stripedPattern(18)}
           </defs>
-          <g>
+          <g transform="translate(-500)">
           <path
             d={`
               M955 3530 c-121 -24 -218 -83 -272 -164 -42 -61 -57 -115 -58 -196 0
