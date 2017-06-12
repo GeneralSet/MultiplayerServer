@@ -19,36 +19,36 @@ export default class Card extends React.Component<CardProps, null> {
     super(props);
   }
 
-  symbolStyle() {
+  symbolStyle(scale: number) {
     if (this.props.shading === 'solid') {
       return {
         fill: this.props.color,
-        strokeWidth: 3,
+        strokeWidth: 3 * scale,
         stroke: this.props.color,
       };
     } else if (this.props.shading === 'partial') {
       return {
         fill: `url(#pattern${this.props.id})`,
-        strokeWidth: 3,
+        strokeWidth: 3 * scale,
         stroke: this.props.color,
       };
     } else {
       return {
-        strokeWidth: 3,
+        strokeWidth: 3 * scale,
         stroke: this.props.color,
         fill: 'transparent'
       };
     }
   }
 
-  stripedPattern() {
+  stripedPattern(scale: number | null) {
     return (
       <pattern
         id={`pattern${this.props.id}`}
         width="8"
         height="10"
         patternUnits="userSpaceOnUse"
-        patternTransform="rotate(90)"
+        patternTransform={`rotate(90) ${scale ? `scale(${scale})` : ''}`}
       >
         <line stroke={this.props.color} strokeWidth="5px" y2="15"/>
       </pattern>
@@ -60,7 +60,7 @@ export default class Card extends React.Component<CardProps, null> {
       <div>
         <svg width={this.symbolWidth + 10} height={this.symbolHeight + 10}>
           <defs>
-            {this.stripedPattern()}
+            {this.stripedPattern(null)}
           </defs>
           <rect
             x="5"
@@ -69,7 +69,7 @@ export default class Card extends React.Component<CardProps, null> {
             height={this.symbolHeight}
             rx={this.symbolWidth / 2}
             ry={this.symbolWidth / 2}
-            style={this.symbolStyle()}
+            style={this.symbolStyle(1)}
           />
         </svg>
       </div>
@@ -81,7 +81,7 @@ export default class Card extends React.Component<CardProps, null> {
       <div>
         <svg width={this.symbolWidth + 10} height={this.symbolHeight + 10}>
           <defs>
-            {this.stripedPattern()}
+            {this.stripedPattern(null)}
           </defs>
           <polygon
             points={`
@@ -90,7 +90,7 @@ export default class Card extends React.Component<CardProps, null> {
               ${this.symbolWidth},${this.symbolHeight / 2}
               ${this.symbolWidth / 2},${this.symbolHeight}
             `}
-            style={this.symbolStyle()}
+            style={this.symbolStyle(1)}
           />
         </svg>
       </div>
@@ -100,20 +100,25 @@ export default class Card extends React.Component<CardProps, null> {
   kidney() {
     return (
       <div>
-        <svg width={this.symbolWidth + 10} height={this.symbolHeight + 10}>
+        <svg width="100%" height="100%" viewBox="0 0 1860 3880">
           <defs>
-            {this.stripedPattern()}
+            {this.stripedPattern(18)}
           </defs>
+          <g>
           <path
             d={`
-              m 33,180 c 6,-13 11,-23 26,-28 15,-5 31,-1 58,7 23,7 36,0 43,-3 7,-4 17,-9 30,-9
-              13,0 18,21 12,33 -5,11 -14,23 -26,28 -12,5 -32,1 -59,-7 -17,-5 -29,-3 -42,3 -9,4
-              -18,10 -30,9 -13,0 -19,-18 -12,-33 z
+              M955 3530 c-121 -24 -218 -83 -272 -164 -42 -61 -57 -115 -58 -196 0
+              -80 31 -149 132 -290 141 -196 166 -251 182 -391 11 -98 -1 -251 -29 -359 -11
+              -41 -60 -194 -109 -340 -181 -537 -210 -760 -135 -1029 83 -298 259 -485 524
+              -555 241 -65 475 -56 645 23 107 51 175 114 220 204 80 162 60 228 -140 477
+              -131 163 -170 225 -195 309 -20 65 -22 88 -17 190 7 137 17 176 137 523 148
+              426 188 624 169 833 -29 309 -244 590 -544 710 -137 55 -380 81 -510 55z
             `}
-            transform="translate(30) rotate(90 100 100)"
-            style={this.symbolStyle()}
+            style={this.symbolStyle(18)}
           />
+          </g>
         </svg>
+
       </div>
     );
   }
@@ -130,7 +135,7 @@ export default class Card extends React.Component<CardProps, null> {
       }
     }
     return (
-      <div className={`ui card ${ this.props.selected ? 'blue' : ''}`}>
+      <div className={`ui card ${ this.props.selected ? 'selected' : ''}`}>
         <div className="content">
           {symbols}
         </div>

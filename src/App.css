@@ -1,6 +1,6 @@
 .App {
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: 25% 25% 25% 25%;
   grid-column-gap: 10px;
   grid-row-gap: 10px;
 }

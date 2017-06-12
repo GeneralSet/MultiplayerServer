@@ -18,6 +18,7 @@ export default class App extends React.Component<Props, State> {
       selectedIds: []
     };
     this.verifySet = this.verifySet.bind(this);
+    this.clearSelection = this.clearSelection.bind(this);
 
   }
 
@@ -83,15 +84,17 @@ export default class App extends React.Component<Props, State> {
     return true;
   }
 
-  verifySet() {
-    // clear board
+  clearSelection() {
     const board = this.state.board;
-    const selectedIds = this.state.selectedIds;
     this.state.selectedIds.forEach((id) => {
       board[id].selected = false;
     });
     this.setState({board, selectedIds: []});
+  }
 
+  verifySet() {
+    const selectedIds = this.state.selectedIds;
+    this.clearSelection();
     // ensure right num cards selected
     if (selectedIds.length < 3 ) {
       alert('not set');
@@ -121,9 +124,11 @@ export default class App extends React.Component<Props, State> {
   render() {
     return (
       <div className="App">
-        <div className="title-bar">
-          <a onClick={this.verifySet}>Set!</a>
-        </div>
+      <div className="title-bar">
+        <button className="ui primary button" onClick={this.verifySet}>Set!</button>
+        <button className="ui button" onClick={this.clearSelection}>Clear</button>
+        <span className="error">Error</span>
+      </div>
         {this.state.board.map((card: CardProps, i: number) => {
           return (
             <a onClick={() => this.selectCard(card, i)}>
