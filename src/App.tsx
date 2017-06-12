@@ -22,20 +22,25 @@ export default class App extends React.Component<Props, State> {
   }
 
   initBoard(): CardProps[] {
-    return [
-      {color: 'red', shading: 'solid', shape: 'oval', number: 1, selected: false},
-      {color: 'red', shading: 'solid', shape: 'oval', number: 1, selected: false},
-      {color: 'green', shading: 'partial', shape: 'kidney', number: 2, selected: false},
-      {color: 'purple', shading: 'none', shape: 'diamond', number: 3, selected: false},
-      {color: 'red', shading: 'solid', shape: 'oval', number: 1, selected: false},
-      {color: 'red', shading: 'solid', shape: 'oval', number: 1, selected: false},
-      {color: 'green', shading: 'partial', shape: 'kidney', number: 2, selected: false},
-      {color: 'purple', shading: 'none', shape: 'diamond', number: 3, selected: false},
-      {color: 'red', shading: 'solid', shape: 'oval', number: 1, selected: false},
-      {color: 'red', shading: 'solid', shape: 'oval', number: 1, selected: false},
-      {color: 'green', shading: 'partial', shape: 'kidney', number: 2, selected: false},
-      {color: 'purple', shading: 'none', shape: 'diamond', number: 3, selected: false},
-    ];
+    const board = [];
+    const colors = ['red', 'green', 'purple'];
+    const shading = ['solid', 'partial', 'none'];
+    const shape = ['oval', 'kidney', 'diamond'];
+    const numbers = [1, 2, 3];
+    function randomElement(a: string[]|number[]) {
+      return a[Math.floor(Math.random() * a.length)];
+    }
+    for (let i = 0; i < 12; i++) {
+      board.push({
+        id: i,
+        color: randomElement(colors),
+        shading: randomElement(shading),
+        shape: randomElement(shape),
+        number: randomElement(numbers),
+        selected: false
+      });
+    }
+    return board as CardProps[];
   }
 
   selectCard(card: CardProps, index: number) {
@@ -116,7 +121,9 @@ export default class App extends React.Component<Props, State> {
   render() {
     return (
       <div className="App">
-        <div className="title-bar"><a onClick={this.verifySet}>Set!</a></div>
+        <div className="title-bar">
+          <a onClick={this.verifySet}>Set!</a>
+        </div>
         {this.state.board.map((card: CardProps, i: number) => {
           return (
             <a onClick={() => this.selectCard(card, i)}>

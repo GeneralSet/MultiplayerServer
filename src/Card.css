@@ -6,34 +6,5 @@
 .card .content {
   height: 280px;
   align-self: center;
-}
-
-.symbol {
-  height: 250px;
-  width: 100px;
-  border: 1px solid #000;
-}
-
-.symbol.partial {
-  background: repeating-linear-gradient(
-    0deg,
-    #000, #000 .25em,
-    transparent 0, transparent .75em
-  );
-}
-.symbol.solid {
-  background-color: #000;
-}
-
-.symbol.oval {
-  border-radius: 100px;
-}
-
-.symbol.kidney {
-}
-
-.symbol.diamond {
-  height: 75px;
-  transform: rotate(112deg) skew(-45deg);
-  transform-origin: 0 100%;
+  display: flex;
 }
