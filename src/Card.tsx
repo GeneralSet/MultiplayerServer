@@ -104,13 +104,13 @@ export default class Card extends React.Component<CardProps, null> {
           <defs>
             {this.stripedPattern()}
           </defs>
-          <polygon
-            points={`
-              0,${this.symbolHeight / 2}
-              ${this.symbolWidth / 2},0
-              ${this.symbolWidth},${this.symbolHeight / 2}
-              ${this.symbolWidth / 2},${this.symbolHeight}
+          <path
+            d={`
+              m 33,180 c 6,-13 11,-23 26,-28 15,-5 31,-1 58,7 23,7 36,0 43,-3 7,-4 17,-9 30,-9
+              13,0 18,21 12,33 -5,11 -14,23 -26,28 -12,5 -32,1 -59,-7 -17,-5 -29,-3 -42,3 -9,4
+              -18,10 -30,9 -13,0 -19,-18 -12,-33 z
             `}
+            transform="translate(30) rotate(90 100 100)"
             style={this.symbolStyle()}
           />
         </svg>
@@ -119,23 +119,15 @@ export default class Card extends React.Component<CardProps, null> {
   }
 
   render() {
-    // <div className="description">
-    //   <p>{this.props.color}</p>
-    //   <p>{this.props.shading}</p>
-    //   <p>{this.props.shape}</p>
-    //   <p>{this.props.number}</p>
-    // </div>
-    // <div className={`symbol ${this.props.shape} ${this.props.shading}`} />
     const symbols = [];
     for (let i = 0; i < this.props.number; i++) {
-      symbols.push(this.kidney());
-      // if (this.props.shape === 'oval') {
-      //   symbols.push(this.oval());
-      // } else if (this.props.shape === 'kidney') {
-      //   symbols.push(this.oval());
-      // } else {
-      //   symbols.push(this.diamond());
-      // }
+      if (this.props.shape === 'oval') {
+        symbols.push(this.oval());
+      } else if (this.props.shape === 'kidney') {
+        symbols.push(this.kidney());
+      } else {
+        symbols.push(this.diamond());
+      }
     }
     return (
       <div className={`ui card ${ this.props.selected ? 'blue' : ''}`}>
