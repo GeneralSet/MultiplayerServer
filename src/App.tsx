@@ -150,9 +150,14 @@ export default class App extends React.Component<Props, State> {
         return false;
       }
     }
+    const board = this.state.board;
+    selectedIds.forEach((id) => {
+      board.splice(id, 1);
+    });
     this.setState({
       alert: {isError: false, message: 'Set!'},
-      points: this.state.points + 1
+      points: this.state.points + 1,
+      board
     });
     return true;
   }
