@@ -4,7 +4,7 @@
 }
 
 .ui.card.selected {
-  box-shadow: 0 1px 3px 0 #1678c2, 0 0 0 1px #1678c2;
+  box-shadow: 0 2px 3px 0 #1678c2, 0 0 0 2px #1678c2;
 }
 
 .card .content {
