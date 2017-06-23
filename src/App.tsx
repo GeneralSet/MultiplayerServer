@@ -31,7 +31,7 @@ export default class App extends React.Component<Props, State> {
     };
     this.verifySet = this.verifySet.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
-    this.initBoard = this.initBoard.bind(this);
+    this.updateBoard = this.updateBoard.bind(this);
     this.startGame = this.startGame.bind(this);
 
   }
@@ -61,19 +61,22 @@ export default class App extends React.Component<Props, State> {
     return deck;
   }
 
-  initBoard(deck: CardProps[]): void {
+  updateBoard(deck: CardProps[]): void {
     const board = [];
-    for (let i = 0; i < 12; i++) {
-      const randomIndex = Math.floor(Math.random() * deck.length);
-      board.push(deck[randomIndex]);
-      deck.splice(randomIndex, 1);
+    while (board.length < 12) {
+      for (let i = 0 ; i < 3; i++) {
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        board.push(deck[randomIndex]);
+        deck.splice(randomIndex, 1);
+      }
     }
+    // TODO: add check to see if borad contains a set
     this.setState({deck, board});
   }
 
   startGame(): void {
     const deck = this.initDeck();
-    this.initBoard(deck);
+    this.updateBoard(deck);
   }
 
   selectCard(card: CardProps, index: number) {
@@ -150,14 +153,25 @@ export default class App extends React.Component<Props, State> {
         return false;
       }
     }
+
+    // Set found
     const board = this.state.board;
+    const deck = this.state.deck;
     selectedIds.forEach((id) => {
       board.splice(id, 1);
     });
+    // TODO: deduplicate board updating
+    while (board.length < 12) {
+      for (let i = 0 ; i < 3; i++) {
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        board.push(deck[randomIndex]);
+        deck.splice(randomIndex, 1);
+      }
+    }
     this.setState({
       alert: {isError: false, message: 'Set!'},
       points: this.state.points + 1,
-      board
+      board, deck
     });
     return true;
   }
@@ -183,7 +197,16 @@ export default class App extends React.Component<Props, State> {
             {this.state.alert.message}
           </div>) : null
           }
-          <span>Points: {this.state.points}</span>
+          <table className="ui table">
+            <tr>
+              <td>Points</td>
+              <td>{this.state.points}</td>
+            </tr>
+            <tr>
+              <td>Remaining Cards</td>
+              <td>{this.state.deck.length}</td>
+            </tr>
+          </table>
         </div>
           {this.state.board.map((card: CardProps, i: number) => {
             return (
