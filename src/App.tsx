@@ -7,7 +7,10 @@ interface Props {}
 interface State {
   board: CardProps[];
   selectedIds: number[];
-  alert: string;
+  alert: {
+    isError: boolean,
+    message: string
+  };
 }
 
 export default class App extends React.Component<Props, State> {
@@ -17,7 +20,10 @@ export default class App extends React.Component<Props, State> {
     this.state = {
       board: this.initBoard(),
       selectedIds: [],
-      alert: ''
+      alert: {
+        isError: false,
+        message: ''
+      }
     };
     this.verifySet = this.verifySet.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
@@ -54,9 +60,10 @@ export default class App extends React.Component<Props, State> {
     }
     if (selectedIds.length >= 3) {
       this.verifySet();
+    } else {
+      board[index].selected = !board[index].selected;
+      this.setState({board, selectedIds});
     }
-    board[index].selected = !board[index].selected;
-    this.setState({board, selectedIds});
   }
 
   areAttributesNotEqual(attributes: string[]): boolean {
@@ -94,7 +101,9 @@ export default class App extends React.Component<Props, State> {
     this.clearSelection();
     // ensure right num cards selected
     if (selectedIds.length < 3 ) {
-      this.setState({alert: 'Error: not enough cards selected'});
+      this.setState({
+        alert: {isError: true, message: 'Error: not enough cards selected'}
+      });
       return;
     }
 
@@ -110,11 +119,15 @@ export default class App extends React.Component<Props, State> {
       });
       if (!(this.areAttributesEqual(attributeValues) ||
             this.areAttributesNotEqual (attributeValues))) {
-        this.setState({alert: `not set ${attributes[i]} no good`});
+        this.setState({
+          alert: {isError: true, message: `Not a set. ${attributes[i]} is bad`}
+        });
         return false;
       }
     }
-    this.setState({alert: `Set!`});
+    this.setState({
+      alert: {isError: false, message: 'Set!'}
+    });
     return true;
   }
 
@@ -122,8 +135,11 @@ export default class App extends React.Component<Props, State> {
     return (
       <div className="App">
       <div className="title-bar">
-        <button className="ui button" onClick={this.clearSelection}>Clear selection</button>
-        <span className="error">{this.state.alert}</span>
+        { this.state.alert.message ?
+        (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
+          {this.state.alert.message}
+        </div>) : null
+        }
       </div>
         {this.state.board.map((card: CardProps, i: number) => {
           return (
