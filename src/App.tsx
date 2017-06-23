@@ -12,6 +12,7 @@ interface State {
     isError: boolean,
     message: string
   };
+  points: number;
 }
 
 export default class App extends React.Component<Props, State> {
@@ -25,7 +26,8 @@ export default class App extends React.Component<Props, State> {
       alert: {
         isError: false,
         message: ''
-      }
+      },
+      points: 0
     };
     this.verifySet = this.verifySet.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
@@ -142,13 +144,15 @@ export default class App extends React.Component<Props, State> {
       if (!(this.areAttributesEqual(attributeValues) ||
             this.areAttributesNotEqual (attributeValues))) {
         this.setState({
-          alert: {isError: true, message: `Not a set. ${attributes[i]} is bad`}
+          alert: {isError: true, message: `Not a set. ${attributes[i]} is bad`},
+          points: this.state.points > 0 ? this.state.points - 1 : 0
         });
         return false;
       }
     }
     this.setState({
-      alert: {isError: false, message: 'Set!'}
+      alert: {isError: false, message: 'Set!'},
+      points: this.state.points + 1
     });
     return true;
   }
@@ -158,6 +162,10 @@ export default class App extends React.Component<Props, State> {
       return (
         <div>
           <h1>Set</h1>
+          <p>
+            select 3 cards where for each attribute (color, shading, shape, and number) each card
+            has all the same or all diffrent values
+          </p>
           <button onClick={this.startGame}>Start game</button>
         </div>
       );
@@ -170,6 +178,7 @@ export default class App extends React.Component<Props, State> {
             {this.state.alert.message}
           </div>) : null
           }
+          <span>Points: {this.state.points}</span>
         </div>
           {this.state.board.map((card: CardProps, i: number) => {
             return (
