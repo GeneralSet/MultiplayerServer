@@ -47,7 +47,7 @@ export default class App extends React.Component<Props, State> {
         for (let k = 0; k < shape.length; k++) {
           for (let l = 0; l < numbers.length; l++) {
             deck.push({
-              id: i + j + k + l,
+              id: i + (j * 10) + (k * 100) + (l * 1000),
               color: colors[i],
               shading: shading[j],
               shape: shape[k],

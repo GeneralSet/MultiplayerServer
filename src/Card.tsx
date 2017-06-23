@@ -139,7 +139,9 @@ export default class Card extends React.Component<CardProps, null> {
     }
     return (
       <div className={`ui card ${ this.props.selected ? 'selected' : ''}`}>
-        <div className="content">
+        <div
+          className={`content ${this.props.color}_${this.props.shading}_${this.props.shape}_${this.props.number}`}
+        >
           {symbols}
         </div>
       </div>
