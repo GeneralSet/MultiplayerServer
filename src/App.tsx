@@ -145,7 +145,7 @@ export default class App extends React.Component<Props, State> {
             this.areAttributesNotEqual (attributeValues))) {
         this.setState({
           alert: {isError: true, message: `Not a set. ${attributes[i]} is bad`},
-          points: this.state.points > 0 ? this.state.points - 1 : 0
+          points: this.state.points - 1
         });
         return false;
       }
