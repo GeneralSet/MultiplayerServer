@@ -7,6 +7,7 @@ interface Props {}
 interface State {
   board: CardProps[];
   selectedIds: number[];
+  deck: CardProps[];
   alert: {
     isError: boolean,
     message: string
@@ -18,7 +19,8 @@ export default class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      board: this.initBoard(),
+      deck: [],
+      board: [],
       selectedIds: [],
       alert: {
         isError: false,
@@ -27,29 +29,49 @@ export default class App extends React.Component<Props, State> {
     };
     this.verifySet = this.verifySet.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
+    this.initBoard = this.initBoard.bind(this);
+    this.startGame = this.startGame.bind(this);
 
   }
 
-  initBoard(): CardProps[] {
-    const board = [];
+  initDeck(): CardProps[] {
+    const deck = [];
     const colors = ['red', 'green', 'purple'];
     const shading = ['solid', 'partial', 'none'];
     const shape = ['oval', 'kidney', 'diamond'];
     const numbers = [1, 2, 3];
-    function randomElement(a: string[]|number[]) {
-      return a[Math.floor(Math.random() * a.length)];
+    for (let i = 0; i < colors.length; i++) {
+      for (let j = 0; j < shading.length; j++) {
+        for (let k = 0; k < shape.length; k++) {
+          for (let l = 0; l < numbers.length; l++) {
+            deck.push({
+              id: i + j + k + l,
+              color: colors[i],
+              shading: shading[j],
+              shape: shape[k],
+              number: numbers[l],
+              selected: false
+            } as CardProps);
+          }
+        }
+      }
     }
+    return deck;
+  }
+
+  initBoard(deck: CardProps[]): void {
+    const board = [];
     for (let i = 0; i < 12; i++) {
-      board.push({
-        id: i,
-        color: randomElement(colors),
-        shading: randomElement(shading),
-        shape: randomElement(shape),
-        number: randomElement(numbers),
-        selected: false
-      });
+      const randomIndex = Math.floor(Math.random() * deck.length);
+      board.push(deck[randomIndex]);
+      deck.splice(randomIndex, 1);
     }
-    return board as CardProps[];
+    this.setState({deck, board});
+  }
+
+  startGame(): void {
+    const deck = this.initDeck();
+    this.initBoard(deck);
   }
 
   selectCard(card: CardProps, index: number) {
@@ -132,23 +154,33 @@ export default class App extends React.Component<Props, State> {
   }
 
   render() {
-    return (
-      <div className="App">
-      <div className="title-bar">
-        { this.state.alert.message ?
-        (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
-          {this.state.alert.message}
-        </div>) : null
-        }
-      </div>
-        {this.state.board.map((card: CardProps, i: number) => {
-          return (
-            <a onClick={() => this.selectCard(card, i)}>
-              <Card {...card} key={i}/>
-            </a>
-          );
-        })}
-      </div>
-    );
+    if (!this.state.deck.length && !this.state.board.length) {
+      return (
+        <div>
+          <h1>Set</h1>
+          <button onClick={this.startGame}>Start game</button>
+        </div>
+      );
+    } else {
+      return (
+        <div className="App">
+        <div className="title-bar">
+          { this.state.alert.message ?
+          (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
+            {this.state.alert.message}
+          </div>) : null
+          }
+        </div>
+          {this.state.board.map((card: CardProps, i: number) => {
+            return (
+              <a onClick={() => this.selectCard(card, i)} key={i}>
+                <Card {...card}/>
+              </a>
+            );
+          })}
+        </div>
+      );
+    }
+
   }
 }
