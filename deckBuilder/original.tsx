@@ -1,91 +1,93 @@
-const symbolBorder = 3;
-const symbolHeight = (250 - (this.symbolBorder * 2));
-const symbolWidth = (100 - (this.symbolBorder * 2));
+// TODO: should be able to remove id
 
-function symbolStyle(scale: number) {
-  if (this.props.shading === 'solid') {
+const symbolBorder = 3;
+const symbolHeight = (250 - (symbolBorder * 2));
+const symbolWidth = (100 - (symbolBorder * 2));
+
+function symbolStyle(id: number, color: string, shading: string, scale: number) {
+  if (shading === 'solid') {
     return {
-      fill: this.props.color,
+      fill: color,
       strokeWidth: 3 * scale,
-      stroke: this.props.color,
+      stroke: color,
     };
-  } else if (this.props.shading === 'partial') {
+  } else if (shading === 'partial') {
     return {
-      fill: `url(#pattern${this.props.id})`,
+      fill: `url(#pattern${id})`,
       strokeWidth: 3 * scale,
-      stroke: this.props.color,
+      stroke: color,
     };
   } else {
     return {
       strokeWidth: 3 * scale,
-      stroke: this.props.color,
+      stroke: color,
       fill: 'transparent'
     };
   }
 }
 
-function stripedPattern(scale: number | null) {
+function stripedPattern(id: number, color: string, scale: number | null) {
   return (
     <pattern
-      id={`pattern${this.props.id}`}
+      id={`pattern${id}`}
       width="8"
       height="10"
       patternUnits="userSpaceOnUse"
       patternTransform={`rotate(90) ${scale ? `scale(${scale})` : ''}`}
     >
-      <line stroke={this.props.color} strokeWidth="5px" y2="15"/>
+      <line stroke={color} strokeWidth="5px" y2="15"/>
     </pattern>
   );
 }
 
-function oval() {
+function oval(id: number, color: string, shading: string, num: number) {
   return (
     <div>
-      <svg width={this.symbolWidth + 10} height={this.symbolHeight + 10}>
+      <svg width={symbolWidth + 10} height={symbolHeight + 10}>
         <defs>
-          {this.stripedPattern(null)}
+          {stripedPattern(id, color, null)}
         </defs>
         <rect
           x="5"
           y="5"
-          width={this.symbolWidth}
-          height={this.symbolHeight}
-          rx={this.symbolWidth / 2}
-          ry={this.symbolWidth / 2}
-          style={this.symbolStyle(1)}
+          width={symbolWidth}
+          height={symbolHeight}
+          rx={symbolWidth / 2}
+          ry={symbolWidth / 2}
+          style={symbolStyle(id, color, shading, 1)}
         />
       </svg>
     </div>
   );
 }
 
-function diamond() {
+function diamond(id: number, color: string, shading: string, num: number) {
   return (
     <div>
-      <svg width={this.symbolWidth + 10} height={this.symbolHeight + 10}>
+      <svg width={symbolWidth + 10} height={symbolHeight + 10}>
         <defs>
-          {this.stripedPattern(null)}
+          {stripedPattern(id, color, null)}
         </defs>
         <polygon
           points={`
-            0,${this.symbolHeight / 2}
-            ${this.symbolWidth / 2},0
-            ${this.symbolWidth},${this.symbolHeight / 2}
-            ${this.symbolWidth / 2},${this.symbolHeight}
+            0,${symbolHeight / 2}
+            ${symbolWidth / 2},0
+            ${symbolWidth},${symbolHeight / 2}
+            ${symbolWidth / 2},${symbolHeight}
           `}
-          style={this.symbolStyle(1)}
+          style={symbolStyle(id, color, shading, 1)}
         />
       </svg>
     </div>
   );
 }
 
-function kidney() {
+function kidney(id: number, color: string, shading: string, num: number) {
   return (
-    <div style={{width: this.symbolWidth + 10}}>
+    <div style={{width: symbolWidth + 10}}>
       <svg width="100%" height="100%" viewBox="0 0 1860 3880">
         <defs>
-          {this.stripedPattern(18)}
+          {stripedPattern(id, color, 18)}
         </defs>
         <g transform="translate(-500)">
         <path
@@ -97,7 +99,7 @@ function kidney() {
             -131 163 -170 225 -195 309 -20 65 -22 88 -17 190 7 137 17 176 137 523 148
             426 188 624 169 833 -29 309 -244 590 -544 710 -137 55 -380 81 -510 55z
           `}
-          style={this.symbolStyle(18)}
+          style={symbolStyle(id, color, shading, 18)}
         />
         </g>
       </svg>
@@ -106,15 +108,15 @@ function kidney() {
   );
 }
 
-function createSvg() {
+function createSvg(id: number, color: string, shading: string, shape: string, num: number) {
   const symbols = [];
-  for (let i = 0; i < this.props.number; i++) {
-    if (this.props.shape === 'oval') {
-      symbols.push(this.oval());
-    } else if (this.props.shape === 'kidney') {
-      symbols.push(this.kidney());
+  for (let i = 0; i < num; i++) {
+    if (shape === 'oval') {
+      symbols.push(oval(id, color, shading, num));
+    } else if (shape === 'kidney') {
+      symbols.push(kidney(id, color, shading, num));
     } else {
-      symbols.push(this.diamond());
+      symbols.push(diamond(id, color, shading, num));
     }
   }
   // TODO: export as svg
@@ -131,13 +133,12 @@ for (let i = 0; i < attributes[0].length; i++) {
   for (let j = 0; j < attributes[1].length; j++) {
     for (let k = 0; k < attributes[2].length; k++) {
       for (let l = 0; l < attributes[3].length; l++) {
-        createCard(
-          id: i + (j * 10) + (k * 100) + (l * 1000), // TODO: remove this. should no longer be needed
-          color: attributes[0][i],
-          shading: attributes[1][j],
-          shape: attributes[2][k],
-          number: attributes[3][l],
-          selected: false
+        createSvg(
+          i + (j * 10) + (k * 100) + (l * 1000),
+          attributes[0][i] as string,
+          attributes[1][j] as string,
+          attributes[2][k] as string,
+          attributes[3][l] as number,
         );
       }
     }
