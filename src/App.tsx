@@ -80,16 +80,28 @@ export default class App extends React.Component<Props, State> {
     this.updateBoard(deck);
   }
 
-  selectCard(card: CardProps, index: number) {
+  selectCard(card: CardProps, selectedIndex: number) {
     const board = this.state.board;
     const selectedIds = this.state.selectedIds;
-    if (!board[index].selected) {
-      selectedIds.push(index);
+
+    // update selected cards
+    if (board[selectedIndex].selected) {
+      selectedIds.forEach(function(cardId: number, i: number) {
+        if (cardId === selectedIndex) {
+          selectedIds.splice(i, 1);
+        }
+      });
+    } else {
+      selectedIds.push(selectedIndex);
     }
+    console.log(selectedIndex);
+    console.log(selectedIds);
+
+    // update board
     if (selectedIds.length >= 3) {
       this.verifySet();
     } else {
-      board[index].selected = !board[index].selected;
+      board[selectedIndex].selected = !board[selectedIndex].selected;
       this.setState({board, selectedIds});
     }
   }
