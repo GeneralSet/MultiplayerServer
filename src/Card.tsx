@@ -7,9 +7,6 @@ export interface CardProps {
   shading: 'solid' | 'partial' | 'none';
   shape: 'oval' | 'kidney' | 'diamond';
   number: 1 | 2 | 3;
-  // animation
-  // oriantation
-  // dimention line, 2d, 3d, 4d?
   selected: boolean;
 }
 
