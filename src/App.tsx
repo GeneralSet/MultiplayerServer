@@ -16,7 +16,7 @@ interface State {
 }
 
 export default class App extends React.Component<Props, State> {
-  private readonly boardSize = 12;
+  private readonly boardSize = 15;
 
   constructor(props: Props) {
     super(props);
@@ -64,7 +64,7 @@ export default class App extends React.Component<Props, State> {
 
   updateBoard(deck: CardProps[]): void {
     const board = [];
-    while (board.length < boardSize) {
+    while (board.length < this.boardSize) {
       for (let i = 0 ; i < 3; i++) {
         const randomIndex = Math.floor(Math.random() * deck.length);
         board.push(deck[randomIndex]);
@@ -174,7 +174,7 @@ export default class App extends React.Component<Props, State> {
       board.splice(id, 1);
     });
     // TODO: deduplicate board updating
-    while (board.length < boardSize) {
+    while (board.length < this.boardSize) {
       for (let i = 0 ; i < 3; i++) {
         const randomIndex = Math.floor(Math.random() * deck.length);
         board.push(deck[randomIndex]);
