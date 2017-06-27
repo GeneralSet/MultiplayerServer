@@ -39,20 +39,22 @@ export default class App extends React.Component<Props, State> {
 
   initDeck(): CardProps[] {
     const deck = [];
-    const colors = ['red', 'green', 'purple'];
-    const shading = ['solid', 'partial', 'none'];
-    const shape = ['oval', 'kidney', 'diamond'];
-    const numbers = [1, 2, 3];
-    for (let i = 0; i < colors.length; i++) {
-      for (let j = 0; j < shading.length; j++) {
-        for (let k = 0; k < shape.length; k++) {
-          for (let l = 0; l < numbers.length; l++) {
+    const attributes = [
+      ['red', 'green', 'purple'],
+      ['solid', 'partial', 'none'],
+      ['oval', 'kidney', 'diamond'],
+      [1, 2, 3],
+    ];
+    for (let i = 0; i < attributes[0].length; i++) {
+      for (let j = 0; j < attributes[1].length; j++) {
+        for (let k = 0; k < attributes[2].length; k++) {
+          for (let l = 0; l < attributes[3].length; l++) {
             deck.push({
               id: i + (j * 10) + (k * 100) + (l * 1000),
-              color: colors[i],
-              shading: shading[j],
-              shape: shape[k],
-              number: numbers[l],
+              color: attributes[0][i],
+              shading: attributes[1][j],
+              shape: attributes[2][k],
+              number: attributes[3][l],
               selected: false
             } as CardProps);
           }
