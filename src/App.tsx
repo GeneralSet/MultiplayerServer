@@ -227,37 +227,39 @@ export default class App extends React.Component<Props, State> {
     } else {
       return (
         <div className="App">
-        <div className="title-bar">
-          { this.state.alert.message ?
-          (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
-            {this.state.alert.message}
-          </div>) : null
-          }
-          <button className="ui button" onClick={() => this.clearSelection()}>Clear</button>
-          <table className="ui table">
-            <tbody>
-              <tr>
-                <td>Points</td>
-                <td>{this.state.points}</td>
-              </tr>
-              <tr>
-                <td>Remaining Cards</td>
-                <td>{this.state.deck.length}</td>
-              </tr>
-              <tr>
-                <td>Number of sets</td>
-                <td>{this.state.numberOfSets}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-          {this.state.board.map((card: CardProps, i: number) => {
-            return (
-              <a onClick={() => this.selectCard(card, i)} key={i}>
-                <Card {...card}/>
-              </a>
-            );
-          })}
+          <div className="title-bar">
+            { this.state.alert.message ?
+            (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
+              {this.state.alert.message}
+            </div>) : null
+            }
+            <button className="ui button" onClick={() => this.clearSelection()}>Clear</button>
+            <table className="ui table">
+              <tbody>
+                <tr>
+                  <td>Points</td>
+                  <td>{this.state.points}</td>
+                </tr>
+                <tr>
+                  <td>Remaining Cards</td>
+                  <td>{this.state.deck.length}</td>
+                </tr>
+                <tr>
+                  <td>Number of sets</td>
+                  <td>{this.state.numberOfSets}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="board">
+            {this.state.board.map((card: CardProps, i: number) => {
+              return (
+                <a onClick={() => this.selectCard(card, i)} key={i}>
+                  <Card {...card}/>
+                </a>
+              );
+            })}
+          </div>
         </div>
       );
     }
