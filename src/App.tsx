@@ -13,10 +13,12 @@ interface State {
     message: string
   };
   points: number;
+  numberOfSets: number;
 }
 
 export default class App extends React.Component<Props, State> {
-  private readonly boardSize = 15;
+  private readonly boardSize = 12;
+  private readonly attributes = ['color', 'shading', 'shape', 'number'];
 
   constructor(props: Props) {
     super(props);
@@ -28,13 +30,13 @@ export default class App extends React.Component<Props, State> {
         isError: false,
         message: ''
       },
+      numberOfSets: 0,
       points: 0
     };
     this.verifySet = this.verifySet.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
     this.updateBoard = this.updateBoard.bind(this);
     this.startGame = this.startGame.bind(this);
-
   }
 
   initDeck(): CardProps[] {
@@ -64,6 +66,23 @@ export default class App extends React.Component<Props, State> {
     return deck;
   }
 
+  numberOfSets(board: CardProps[]): number {
+    let count = 0;
+    for (let i = 0; i < board.length; i++) {
+      for (let j = i + 1; j < board.length; j++) {
+        for (let k = j + 2; k < board.length; k++) {
+          const isValidSet = this._isSet(
+            [board[i], board[j], board[k]]
+          );
+          if (isValidSet) {
+            count++;
+          }
+        }
+      }
+    }
+    return count;
+  }
+
   updateBoard(deck: CardProps[]): void {
     const board = [];
     while (board.length < this.boardSize) {
@@ -73,8 +92,8 @@ export default class App extends React.Component<Props, State> {
         deck.splice(randomIndex, 1);
       }
     }
-    // TODO: add check to see if borad contains a set
-    this.setState({deck, board});
+    const numberOfSets = this.numberOfSets(board);
+    this.setState({deck, board, numberOfSets});
   }
 
   startGame(): void {
@@ -96,8 +115,6 @@ export default class App extends React.Component<Props, State> {
     } else {
       selectedIds.push(selectedIndex);
     }
-    console.log(selectedIndex);
-    console.log(selectedIds);
 
     // update board
     if (selectedIds.length >= 3) {
@@ -138,7 +155,21 @@ export default class App extends React.Component<Props, State> {
     this.setState({board, selectedIds: []});
   }
 
-  verifySet() {
+  _isSet(cards: CardProps[]): boolean {
+    for (let i = 0; i < this.attributes.length; i++) {
+      const attributeValues = cards.map((card) => {
+        return card[this.attributes[i]];
+      });
+      if (!(this.areAttributesEqual(attributeValues) ||
+            this.areAttributesNotEqual (attributeValues))) {
+        return false;
+      }
+    }
+    return true;
+
+  }
+
+  verifySet(): boolean {
     const selectedIds = this.state.selectedIds;
     this.clearSelection();
     // ensure right num cards selected
@@ -146,27 +177,21 @@ export default class App extends React.Component<Props, State> {
       this.setState({
         alert: {isError: true, message: 'Error: not enough cards selected'}
       });
-      return;
+      return false;
     }
 
-    const attributes = ['color', 'shading', 'shape', 'number'];
     const selectedCards = selectedIds.map((id) => {
       return this.state.board[id];
     });
 
     // check for set
-    for (let i = 0; i < attributes.length; i++) {
-      const attributeValues = selectedCards.map((card) => {
-        return card[attributes[i]];
+    const isValidSet = this._isSet(selectedCards);
+    if (!isValidSet) {
+      this.setState({
+        alert: {isError: true, message: `Not a set.`},
+        points: this.state.points - 1
       });
-      if (!(this.areAttributesEqual(attributeValues) ||
-            this.areAttributesNotEqual (attributeValues))) {
-        this.setState({
-          alert: {isError: true, message: `Not a set. ${attributes[i]} is bad`},
-          points: this.state.points - 1
-        });
-        return false;
-      }
+      return false;
     }
 
     // Set found
@@ -183,10 +208,11 @@ export default class App extends React.Component<Props, State> {
         deck.splice(randomIndex, 1);
       }
     }
+    const numberOfSets = this.numberOfSets(board);
     this.setState({
       alert: {isError: false, message: 'Set!'},
       points: this.state.points + 1,
-      board, deck
+      board, deck, numberOfSets
     });
     return true;
   }
@@ -222,6 +248,10 @@ export default class App extends React.Component<Props, State> {
               <tr>
                 <td>Remaining Cards</td>
                 <td>{this.state.deck.length}</td>
+              </tr>
+              <tr>
+                <td>Number of sets</td>
+                <td>{this.state.numberOfSets}</td>
               </tr>
             </tbody>
           </table>
