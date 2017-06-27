@@ -17,7 +17,7 @@ interface State {
 }
 
 export default class App extends React.Component<Props, State> {
-  private readonly boardSize = 12;
+  private boardSize = 12;
   private readonly attributes = ['color', 'shading', 'shape', 'number'];
 
   constructor(props: Props) {
@@ -70,7 +70,7 @@ export default class App extends React.Component<Props, State> {
     let count = 0;
     for (let i = 0; i < board.length; i++) {
       for (let j = i + 1; j < board.length; j++) {
-        for (let k = j + 2; k < board.length; k++) {
+        for (let k = j + 1; k < board.length; k++) {
           const isValidSet = this._isSet(
             [board[i], board[j], board[k]]
           );
@@ -85,14 +85,17 @@ export default class App extends React.Component<Props, State> {
 
   updateBoard(deck: CardProps[]): {deck: CardProps[], board: CardProps[], numberOfSets: number} {
     const board = [];
-    while (board.length < this.boardSize) {
+    let numberOfSets = 0;
+    while (board.length < this.boardSize && numberOfSets < 1) {
       for (let i = 0 ; i < 3; i++) {
         const randomIndex = Math.floor(Math.random() * deck.length);
         board.push(deck[randomIndex]);
         deck.splice(randomIndex, 1);
       }
+      if (board.length >= this.boardSize) {
+        numberOfSets = this.numberOfSets(board);
+      }
     }
-    const numberOfSets = this.numberOfSets(board);
     return {deck, board, numberOfSets};
   }
 
