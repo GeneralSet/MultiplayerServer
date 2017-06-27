@@ -83,7 +83,7 @@ export default class App extends React.Component<Props, State> {
     return count;
   }
 
-  updateBoard(deck: CardProps[]): void {
+  updateBoard(deck: CardProps[]): {deck: CardProps[], board: CardProps[], numberOfSets: number} {
     const board = [];
     while (board.length < this.boardSize) {
       for (let i = 0 ; i < 3; i++) {
@@ -93,12 +93,12 @@ export default class App extends React.Component<Props, State> {
       }
     }
     const numberOfSets = this.numberOfSets(board);
-    this.setState({deck, board, numberOfSets});
+    return {deck, board, numberOfSets};
   }
 
   startGame(): void {
     const deck = this.initDeck();
-    this.updateBoard(deck);
+    this.setState(this.updateBoard(deck));
   }
 
   selectCard(card: CardProps, selectedIndex: number) {
@@ -200,19 +200,14 @@ export default class App extends React.Component<Props, State> {
     selectedIds.forEach((id) => {
       board.splice(id, 1);
     });
-    // TODO: deduplicate board updating
-    while (board.length < this.boardSize) {
-      for (let i = 0 ; i < 3; i++) {
-        const randomIndex = Math.floor(Math.random() * deck.length);
-        board.push(deck[randomIndex]);
-        deck.splice(randomIndex, 1);
-      }
-    }
-    const numberOfSets = this.numberOfSets(board);
+
+    const updatedBoad = this.updateBoard(deck);
     this.setState({
       alert: {isError: false, message: 'Set!'},
       points: this.state.points + 1,
-      board, deck, numberOfSets
+      board: updatedBoad.board,
+      deck: updatedBoad.deck,
+      numberOfSets: updatedBoad.numberOfSets
     });
     return true;
   }
