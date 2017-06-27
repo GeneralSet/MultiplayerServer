@@ -212,15 +212,18 @@ export default class App extends React.Component<Props, State> {
             {this.state.alert.message}
           </div>) : null
           }
+          <button className="ui button" onClick={() => this.clearSelection()}>Clear</button>
           <table className="ui table">
-            <tr>
-              <td>Points</td>
-              <td>{this.state.points}</td>
-            </tr>
-            <tr>
-              <td>Remaining Cards</td>
-              <td>{this.state.deck.length}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>Points</td>
+                <td>{this.state.points}</td>
+              </tr>
+              <tr>
+                <td>Remaining Cards</td>
+                <td>{this.state.deck.length}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
           {this.state.board.map((card: CardProps, i: number) => {
