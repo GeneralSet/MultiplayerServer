@@ -87,6 +87,9 @@ export default class App extends React.Component<Props, State> {
     const board = [];
     let numberOfSets = 0;
     while (board.length < this.boardSize && numberOfSets < 1) {
+      if (deck.length < 1) {
+        break;
+      }
       for (let i = 0 ; i < 3; i++) {
         const randomIndex = Math.floor(Math.random() * deck.length);
         board.push(deck[randomIndex]);
