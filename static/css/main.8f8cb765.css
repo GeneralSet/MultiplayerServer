@@ -1,0 +1,2 @@
+.board{display:grid;grid-template-columns:10% 10% 10%;grid-column-gap:10px;grid-row-gap:10px}.title-bar{grid-column-start:1;grid-column-end:5;text-align:center}.ui.card{display:-ms-flexbox;display:flex}.ui.card.selected{-webkit-box-shadow:0 2px 3px 0 #1678c2,0 0 0 2px #1678c2;box-shadow:0 2px 3px 0 #1678c2,0 0 0 2px #1678c2}p{text-align:center}body{margin:0;padding:20px;font-family:sans-serif}
+/*# sourceMappingURL=main.8f8cb765.css.map*/
