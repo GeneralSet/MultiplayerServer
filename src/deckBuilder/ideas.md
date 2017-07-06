@@ -2,6 +2,7 @@
 - animation
 - oriantation
 - dimention (1,2,3, 4?)
+- gradient
 
 # Images
 - happy-neutral-sad
