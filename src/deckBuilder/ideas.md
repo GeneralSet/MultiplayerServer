@@ -7,5 +7,8 @@
 # Images
 - happy-neutral-sad
 - urban-suburban-rural
-- sky (clear, cloudy, stormy)
+- animal-plants-fungi
+- land-water-air animal
+- sky (sunny, cloudy, storm)
 - major imaghe color
+- water calm-wavy-stormy 
