@@ -10,5 +10,6 @@
 - animal-plants-fungi
 - land-water-air animal
 - sky (sunny, cloudy, storm)
-- major imaghe color
-- water calm-wavy-stormy 
+- major image color
+- water: calm-wavy-stormy
+- drawing style: photo-line-
