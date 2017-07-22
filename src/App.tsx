@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './App.css';
+import { style } from 'typestyle';
 import Card, {CardProps} from './Card';
 
 interface Props {}
@@ -19,6 +19,19 @@ interface State {
 export default class App extends React.Component<Props, State> {
   private boardSize = 12;
   private readonly attributes = ['color', 'shading', 'shape', 'number'];
+  private readonly classStyles = {
+    board: style({
+      display: 'grid',
+      gridTemplateColumns: '33% 33% 33%',
+      gridColumnGap: '10px',
+      gridRowGap: '10px',
+    }),
+    titleBar: style({
+      gridColumnStart: 1,
+      gridColumnEnd: 5,
+      textAlign: 'center',
+    }),
+  };
 
   constructor(props: Props) {
     super(props);
@@ -233,7 +246,7 @@ export default class App extends React.Component<Props, State> {
     } else {
       return (
         <div className="App">
-          <div className="title-bar">
+          <div className={this.classStyles.titleBar}>
             { this.state.alert.message ?
             (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
               {this.state.alert.message}
@@ -257,7 +270,7 @@ export default class App extends React.Component<Props, State> {
               </tbody>
             </table>
           </div>
-          <div className="board">
+          <div className={this.classStyles.board}>
             {this.state.board.map((card: CardProps, i: number) => {
               return (
                 <a onClick={() => this.selectCard(card, i)} key={i}>
