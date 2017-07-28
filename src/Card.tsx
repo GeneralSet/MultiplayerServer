@@ -12,21 +12,23 @@ export interface CardProps {
 
 export default class Card extends React.Component<CardProps, null> {
   private symbolBorder = 3;
-  private symbolHeight = (250 - (this.symbolBorder * 2));
-  private symbolWidth = (100 - (this.symbolBorder * 2));
+  private symbolHeight = (100 - (this.symbolBorder * 2));
+  private symbolWidth = (40 - (this.symbolBorder * 2));
   private readonly classStyles = {
     card: style({
-      width: '100%',
+      height: '90%',
+      width: '90%',
       display: 'flex',
       justifyContent: 'center',
+      alignItems: 'center',
+      margin: '10%',
       border: '1px #ccc solid',
-      borderRadius: '10px',
+      borderRadius: '5%',
     }),
     cardSelected: style({
       boxShadow: '0 2px 3px 0 #1678c2, 0 0 0 2px #1678c2',
     }),
     content: style({
-      height: '280px',
       alignSelf: 'center',
       display: 'flex',
     }),
