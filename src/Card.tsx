@@ -12,8 +12,8 @@ export interface CardProps {
 
 export default class Card extends React.Component<CardProps, null> {
   private symbolBorder = 3;
-  private symbolHeight = (250 - (this.symbolBorder * 2));
-  private symbolWidth = (100 - (this.symbolBorder * 2));
+  private symbolHeight = (100 - (this.symbolBorder * 2));
+  private symbolWidth = (40 - (this.symbolBorder * 2));
 
   constructor(props: CardProps) {
     super(props);
