@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './Card.css';
+import { style } from 'typestyle';
 
 export interface CardProps {
   id: number;
@@ -14,6 +14,23 @@ export default class Card extends React.Component<CardProps, null> {
   private symbolBorder = 3;
   private symbolHeight = (250 - (this.symbolBorder * 2));
   private symbolWidth = (100 - (this.symbolBorder * 2));
+  private readonly classStyles = {
+    card: style({
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      border: '1px #ccc solid',
+      borderRadius: '10px',
+    }),
+    cardSelected: style({
+      boxShadow: '0 2px 3px 0 #1678c2, 0 0 0 2px #1678c2',
+    }),
+    content: style({
+      height: '280px',
+      alignSelf: 'center',
+      display: 'flex',
+    }),
+  };
 
   constructor(props: CardProps) {
     super(props);
@@ -135,9 +152,9 @@ export default class Card extends React.Component<CardProps, null> {
       }
     }
     return (
-      <div className={`ui card ${ this.props.selected ? 'selected' : ''}`}>
+      <div className={`${this.classStyles.card} ${ this.props.selected ? this.classStyles.cardSelected : ''}`}>
         <div
-          className={`content ${this.props.color}_${this.props.shading}_${this.props.shape}_${this.props.number}`}
+          className={`${this.classStyles.content} ${this.props.color}_${this.props.shading}_${this.props.shape}_${this.props.number}`}
         >
           {symbols}
         </div>
