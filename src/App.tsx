@@ -21,15 +21,20 @@ export default class App extends React.Component<Props, State> {
   private readonly attributes = ['color', 'shading', 'shape', 'number'];
   private readonly classStyles = {
     board: style({
-      display: 'grid',
-      gridTemplateColumns: '33% 33% 33%',
-      gridColumnGap: '10px',
-      gridRowGap: '10px',
+      height: '750px',
+      width: '700px',
+      margin: 'auto',
     }),
-    titleBar: style({
-      gridColumnStart: 1,
-      gridColumnEnd: 5,
-      textAlign: 'center',
+    flexCenter: style({
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center',
+    }),
+    cardWrap: style({
+      width: '175px',
+      height: '250px',
     }),
   };
 
@@ -238,7 +243,7 @@ export default class App extends React.Component<Props, State> {
           <h1>Set</h1>
           <p>
             select 3 cards where for each attribute (color, shading, shape, and number) each card
-            has all the same or all diffrent values
+            has all the same or all different values
           </p>
           <button onClick={this.startGame}>Start game</button>
         </div>
@@ -246,7 +251,7 @@ export default class App extends React.Component<Props, State> {
     } else {
       return (
         <div className="App">
-          <div className={this.classStyles.titleBar}>
+          <div className={this.classStyles.flexCenter}>
             { this.state.alert.message ?
             (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
               {this.state.alert.message}
@@ -270,10 +275,10 @@ export default class App extends React.Component<Props, State> {
               </tbody>
             </table>
           </div>
-          <div className={this.classStyles.board}>
+          <div className={`${this.classStyles.board} ${this.classStyles.flexCenter}`}>
             {this.state.board.map((card: CardProps, i: number) => {
               return (
-                <a onClick={() => this.selectCard(card, i)} key={i}>
+                <a className={this.classStyles.cardWrap} onClick={() => this.selectCard(card, i)} key={i}>
                   <Card {...card}/>
                 </a>
               );

@@ -1,6 +1,12 @@
 .ui.card {
-  width: 100%;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10%;
+  border: 1px solid #cccccc;
+  border-radius: 5%;
+  height: 90%;
+  width: 90%;
 }
 
 .ui.card.selected {
@@ -8,7 +14,6 @@
 }
 
 .card .content {
-  height: 280px;
-  align-self: center;
+  align-items: center;
   display: flex;
 }
