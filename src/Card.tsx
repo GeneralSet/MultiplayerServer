@@ -121,7 +121,7 @@ export default class Card extends React.Component<CardProps, null> {
       <div style={{width: this.symbolWidth + 10}}>
         <svg width="100%" height="100%" viewBox="0 0 1860 3880">
           <defs>
-            {this.stripedPattern(18)}
+            {this.stripedPattern(35)}
           </defs>
           <g transform="translate(-500)">
           <path
@@ -133,7 +133,7 @@ export default class Card extends React.Component<CardProps, null> {
               -131 163 -170 225 -195 309 -20 65 -22 88 -17 190 7 137 17 176 137 523 148
               426 188 624 169 833 -29 309 -244 590 -544 710 -137 55 -380 81 -510 55z
             `}
-            style={this.symbolStyle(18)}
+            style={this.symbolStyle(35)}
           />
           </g>
         </svg>
