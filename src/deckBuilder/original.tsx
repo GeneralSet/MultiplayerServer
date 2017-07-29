@@ -1,3 +1,7 @@
+var fs = require('fs');
+import * as React from 'react';
+import * as ReactDOMServer from 'react-dom/server';
+
 // TODO: should be able to remove id
 
 const symbolBorder = 3;
@@ -42,22 +46,20 @@ function stripedPattern(id: number, color: string, scale: number | null) {
 
 function oval(id: number, color: string, shading: string, num: number) {
   return (
-    <div>
-      <svg width={symbolWidth + 10} height={symbolHeight + 10}>
-        <defs>
-          {stripedPattern(id, color, null)}
-        </defs>
-        <rect
-          x="5"
-          y="5"
-          width={symbolWidth}
-          height={symbolHeight}
-          rx={symbolWidth / 2}
-          ry={symbolWidth / 2}
-          style={symbolStyle(id, color, shading, 1)}
-        />
-      </svg>
-    </div>
+    <svg width={symbolWidth + 10} height={symbolHeight + 10} xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        {stripedPattern(id, color, null)}
+      </defs>
+      <rect
+        x="5"
+        y="5"
+        width={symbolWidth}
+        height={symbolHeight}
+        rx={symbolWidth / 2}
+        ry={symbolWidth / 2}
+        style={symbolStyle(id, color, shading, 1)}
+      />
+    </svg>
   );
 }
 
@@ -83,13 +85,10 @@ function diamond(id: number, color: string, shading: string, num: number) {
 }
 
 function kidney(id: number, color: string, shading: string, num: number) {
-  return (
-    <div style={{width: symbolWidth + 10}}>
-      <svg width="100%" height="100%" viewBox="0 0 1860 3880">
-        <defs>
-          {stripedPattern(id, color, 18)}
-        </defs>
-        <g transform="translate(-500)">
+  const kidneys: JSX.Element[] = [];
+  for (let i = 0; i < num; i++) {
+    kidneys.push(
+      <g transform={`translate(${i * 2000})`} key={i}>
         <path
           d={`
             M955 3530 c-121 -24 -218 -83 -272 -164 -42 -61 -57 -115 -58 -196 0
@@ -101,46 +100,64 @@ function kidney(id: number, color: string, shading: string, num: number) {
           `}
           style={symbolStyle(id, color, shading, 18)}
         />
-        </g>
+      </g>
+    );
+  }
+  return (
+    <div style={{width: symbolWidth + 10}}>
+      <svg width="100%" height="100%" viewBox="0 0 1860 3880">
+        <defs>
+          {stripedPattern(id, color, 18)}
+        </defs>
+        {kidneys}
       </svg>
-
     </div>
   );
 }
 
 function createSvg(id: number, color: string, shading: string, shape: string, num: number) {
-  const symbols = [];
+  const symbols: JSX.Element[] = [];
+  if (shape === 'kidney') {
+    symbols.push(kidney(id, color, shading, num));
+  }
   for (let i = 0; i < num; i++) {
     if (shape === 'oval') {
       symbols.push(oval(id, color, shading, num));
-    } else if (shape === 'kidney') {
-      symbols.push(kidney(id, color, shading, num));
     } else {
       symbols.push(diamond(id, color, shading, num));
     }
   }
-  // TODO: export as svg
+  var svg = ReactDOMServer.renderToStaticMarkup(symbols[0]);
+  fs.writeFile(`test/${color}_${shading}_${shape}_${num}.svg`, svg, () => null);
 }
 
-const deck = [];
+// const deck = [];
 const attributes = [
   ['red', 'green', 'purple'],
   ['solid', 'partial', 'none'],
   ['oval', 'kidney', 'diamond'],
   [1, 2, 3],
 ];
-for (let i = 0; i < attributes[0].length; i++) {
-  for (let j = 0; j < attributes[1].length; j++) {
-    for (let k = 0; k < attributes[2].length; k++) {
-      for (let l = 0; l < attributes[3].length; l++) {
-        createSvg(
-          i + (j * 10) + (k * 100) + (l * 1000),
-          attributes[0][i] as string,
-          attributes[1][j] as string,
-          attributes[2][k] as string,
-          attributes[3][l] as number,
-        );
-      }
-    }
-  }
-}
+
+createSvg(
+  1,
+  attributes[0][0] as string,
+  attributes[1][0] as string,
+  attributes[2][0] as string,
+  attributes[3][0] as number,
+);
+// for (let i = 0; i < attributes[0].length; i++) {
+//   for (let j = 0; j < attributes[1].length; j++) {
+//     for (let k = 0; k < attributes[2].length; k++) {
+//       for (let l = 0; l < attributes[3].length; l++) {
+//         createSvg(
+//           i + (j * 10) + (k * 100) + (l * 1000),
+//           attributes[0][i] as string,
+//           attributes[1][j] as string,
+//           attributes[2][k] as string,
+//           attributes[3][l] as number,
+//         );
+//       }
+//     }
+//   }
+// }
