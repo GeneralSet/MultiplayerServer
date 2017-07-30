@@ -4,6 +4,7 @@ import { style } from 'typestyle';
 export interface CardProps {
   features: string;
   selected: boolean;
+  gameType: gameTypes;
 }
 
 export default class Card extends React.Component<CardProps, null> {
@@ -37,7 +38,10 @@ export default class Card extends React.Component<CardProps, null> {
     return (
       <div className={`${this.classStyles.card} ${ this.props.selected ? this.classStyles.cardSelected : ''}`}>
         <div className={`${this.classStyles.content} ${this.props.features}`}>
-          <img src={`/decks/original/${this.props.features}.svg`} className={`${this.classStyles.image}`}/>
+          <img
+            src={`/decks/${this.props.gameType}/${this.props.features}.svg`}
+            className={`${this.classStyles.image}`}
+          />
         </div>
       </div>
     );

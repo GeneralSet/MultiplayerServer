@@ -2,7 +2,10 @@ import * as React from 'react';
 import { style } from 'typestyle';
 import Card from './Card';
 
-interface Props {}
+interface Props {
+  endGame: () => void;
+  gameType: gameTypes;
+}
 
 interface State {
   board: string[];
@@ -24,7 +27,7 @@ export default class Board extends React.Component<Props, State> {
 
   private readonly classStyles = {
     board: style({
-      width: '700px',
+      width: '840px',
       margin: 'auto',
     }),
     flexCenter: style({
@@ -35,7 +38,7 @@ export default class Board extends React.Component<Props, State> {
       alignContent: 'center',
     }),
     cardWrap: style({
-      width: '175px',
+      width: '210px',
     }),
   };
 
@@ -217,7 +220,7 @@ export default class Board extends React.Component<Props, State> {
             {this.state.alert.message}
           </div>) : null
           }
-          <button className="ui button" onClick={() => this.clearSelection()}>Clear</button>
+          <button className="ui button" onClick={this.clearSelection}>Clear selection</button>
           <table className="ui table">
             <tbody>
               <tr>
@@ -234,6 +237,7 @@ export default class Board extends React.Component<Props, State> {
               </tr>
             </tbody>
           </table>
+          <button className="ui button" onClick={this.props.endGame}>Quit</button>
         </div>
         <div className={`${this.classStyles.board} ${this.classStyles.flexCenter}`}>
           {this.state.board.map((id: string, index: number) => {
@@ -246,6 +250,7 @@ export default class Board extends React.Component<Props, State> {
                 <Card
                   features={id}
                   selected={this.state.selected.includes(id)}
+                  gameType={this.props.gameType}
                 />
               </a>
             );

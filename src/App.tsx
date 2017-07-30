@@ -5,7 +5,7 @@ import Board from './Board';
 interface Props {}
 
 interface State {
-  showLanding: boolean;
+  gameType: gameTypes | null;
 }
 
 export default class App extends React.Component<Props, State> {
@@ -20,32 +20,39 @@ export default class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      showLanding: true,
+      gameType: null,
     };
     this.startGame = this.startGame.bind(this);
+    this.endGame = this.endGame.bind(this);
   }
 
-  startGame(): void {
-    this.setState({showLanding: true});
+  startGame(gameType: gameTypes): void {
+    this.setState({gameType});
+  }
+
+  endGame(): void {
+    this.setState({gameType: null});
   }
 
   render() {
-    if (!this.state.showLanding) {
+    if (this.state.gameType !== null) {
       return (
-        <div>
-          <h1>Set</h1>
-          <p>
-            select 3 cards where for each attribute (color, shading, shape, and number) each card
-            has all the same or all different values
-          </p>
-          <button onClick={this.startGame}>Start game</button>
-        </div>
-      );
-    } else {
-      return (
-        <Board/>
+        <Board
+          endGame={this.endGame}
+          gameType={this.state.gameType}
+        />
       );
     }
-
+    return (
+      <div>
+        <h1>Set</h1>
+        <p>
+          select 3 cards where for each attribute (color, shading, shape, and number) each card
+          has all the same or all different values
+        </p>
+        <button onClick={() => this.startGame('original')}>Original game</button>
+        <button onClick={() => this.startGame('triangles')}>Triangle World</button>
+      </div>
+    );
   }
 }

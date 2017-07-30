@@ -72,4 +72,4 @@ const DECK_DATA: DeckData = {
 };
 
 const generator = new GeometricDeckGenerator(DECK_DATA);
-generator.exportDeck();
+generator.exportDeck('public/decks/original/');

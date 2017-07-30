@@ -1,0 +1,1 @@
+type gameTypes = 'original' | 'triangles';

@@ -124,7 +124,7 @@ export default class GeometricDeckGenerator {
     return this.symbolsToSVG(shapes, shape.fillScale, shape);
   }
 
-  public exportDeck(): void {
+  public exportDeck(path: string): void {
     for (let i = 0; i < this.attributeLength; i++) {
       for (let j = 0; j < this.attributeLength; j++) {
         for (let k = 0; k < this.attributeLength; k++) {
@@ -137,7 +137,7 @@ export default class GeometricDeckGenerator {
               this.deckData.numbers[l],
             );
             const svg = ReactDOMServer.renderToStaticMarkup(symbol);
-            fs.writeFile(`public/decks/original/${filename}.svg`, svg, () => null);
+            fs.writeFile(`${path}${filename}.svg`, svg, () => null);
           }
         }
       }
