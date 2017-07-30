@@ -21,7 +21,7 @@ function solid(shape: Shape, color: string, _scale: number | null) {
   );
 }
 
-function striped(shape: Shape, color: string, scale: number | null) {
+function triangles(shape: Shape, color: string, scale: number | null) {
   return (
     <g style={{fill: `url(#pattern)`}}>
       <pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -87,7 +87,7 @@ const DECK_DATA: DeckData = {
     },
   ],
   colors: ['#ED254E', '#F9DC5C', '#011936'],
-  shadings: [open, striped, solid],
+  shadings: [open, triangles, solid],
   numbers: [1, 3, 5]
 };
 
