@@ -124,7 +124,7 @@ export default class GeometricDeckGenerator {
     return this.symbolsToSVG(shapes, shape.fillScale, shape);
   }
 
-  public exportDeck() {
+  public exportDeck(): void {
     for (let i = 0; i < this.attributeLength; i++) {
       for (let j = 0; j < this.attributeLength; j++) {
         for (let k = 0; k < this.attributeLength; k++) {
@@ -144,9 +144,9 @@ export default class GeometricDeckGenerator {
     }
   }
 
-  public createSymbol(attr1: number, attr2: number, attr3: number, attr4: number) {
+  public createSymbol(attr1: number, attr2: number, attr3: number, attr4: number): JSX.Element {
     this.validateAttributes(attr1, attr2, attr3, attr4);
-    this.createSvg(
+    return this.createSvg(
       this.deckData.colors[attr1],
       this.deckData.shadings[attr2],
       this.deckData.shapes[attr3],
