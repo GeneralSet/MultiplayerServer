@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { style } from 'typestyle';
+import { media, style } from 'typestyle';
 import Card from './Card';
 
 interface Props {
@@ -26,10 +26,13 @@ export default class Board extends React.Component<Props, State> {
   private readonly cardsForSet = 3;
 
   private readonly classStyles = {
-    board: style({
-      width: '840px',
-      margin: 'auto',
-    }),
+    board: style(
+      {
+        width: '840px',
+        margin: 'auto',
+      },
+      media({maxWidth: '860px'}, {width: '100%'}),
+    ),
     flexCenter: style({
       display: 'flex',
       flexWrap: 'wrap',
