@@ -39,7 +39,7 @@ export default class Card extends React.Component<CardProps, null> {
       <div className={`${this.classStyles.card} ${ this.props.selected ? this.classStyles.cardSelected : ''}`}>
         <div className={`${this.classStyles.content} ${this.props.features}`}>
           <img
-            src={`/decks/${this.props.gameType}/${this.props.features}.svg`}
+            src={`${process.env.PUBLIC_URL}/decks/${this.props.gameType}/${this.props.features}.svg`}
             className={`${this.classStyles.image}`}
           />
         </div>
