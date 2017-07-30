@@ -1,101 +1,9 @@
-var fs = require('fs');
 import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
+import GeometricDeckGenerator from './GeometricDeckGenerator';
 
-const SYMBOL_GAP = 20;
-const SYMBOL_BORDER = 3;
-const SYMBOL_HEIGHT = (250 - (SYMBOL_BORDER * 2));
-const SYMBOL_WIDTH = (100 - (SYMBOL_BORDER * 2));
-
-function addStrokeStyle(shape: Shape, color: string, scale: number) {
-  const style = {
-    stroke: color,
-    strokeWidth: 3 * scale,
-  };
-  return (
-    <g style={style}>
-      {shape}
-    </g>
-  );
-}
-
-function addFillStyle(shape: Shape, color: string, shading: string, scale: number | null) {
-  let style: {fill: string};
-  let defs: JSX.Element | null = null;
-
-  if (shading === 'solid') {
-    style = {fill: color};
-  } else if (shading === 'striped') {
-    const id = 10;
-    defs = (
-      <pattern
-        id={`pattern${id}`}
-        width="8"
-        height="10"
-        patternUnits="userSpaceOnUse"
-        patternTransform={`rotate(90) ${scale ? `scale(${scale})` : ''}`}
-      >
-        <line stroke={color} strokeWidth="5px" y2="15"/>
-      </pattern>
-    );
-    style = {fill: `url(#pattern${id})`};
-  } else {
-    style = {fill: 'transparent'};
-  }
-  return (
-    <g style={style}>
-      {defs}
-      {shape}
-    </g>
-  );
-}
-
-function listSymbols(symbol: JSX.Element, length: number): JSX.Element[] {
-  const symbolList: JSX.Element[] = [];
-  for (let i = 0; i < length; i++) {
-    symbolList.push(
-      <g
-        transform={`translate(${i * (SYMBOL_WIDTH + SYMBOL_GAP)})`}
-        key={i}
-      >
-        {symbol}
-      </g>
-    );
-  }
-  return symbolList;
-}
-
-function symbolsToSVG(
-  shapes: JSX.Element[],
-  scale: number | null,
-  borderWidth: number,
-): JSX.Element {
-  const numShapes: number = shapes.length;
-  return (
-    <svg
-      width={((numShapes * (SYMBOL_WIDTH + SYMBOL_GAP ))) + (borderWidth * numShapes)}
-      height={SYMBOL_HEIGHT + (borderWidth * 2)}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {shapes}
-    </svg>
-  );
-}
-
-function createSvg(
-  color: string,
-  shading: string,
-  shape: SvgData,
-  num: number,
-  filename: string
-) {
-  const shapePattern = addFillStyle(shape.shape, color, shading, shape.fillScale);
-  const shapePatternColor = addStrokeStyle(shapePattern, color, shape.strokeScale);
-  const shapes: JSX.Element[] = listSymbols(shapePatternColor, num);
-  const symbol = symbolsToSVG(shapes, shape.fillScale, (SYMBOL_BORDER + 3));
-  var svg = ReactDOMServer.renderToStaticMarkup(symbol);
-  fs.writeFile(`public/decks/original/${filename}.svg`, svg, () => null);
-}
+const BORDER = 3;
+const HEIGHT = (250 - (BORDER * 2));
+const WIDTH = (100 - (BORDER * 2));
 
 const DECK_DATA: DeckData = {
   shapes: [
@@ -103,31 +11,37 @@ const DECK_DATA: DeckData = {
       name: 'oval',
       shape: (
         <rect
-          x={SYMBOL_BORDER}
-          y={SYMBOL_BORDER}
-          width={SYMBOL_WIDTH}
-          height={SYMBOL_HEIGHT}
-          rx={SYMBOL_WIDTH / 2}
-          ry={SYMBOL_WIDTH / 2}
+          x={BORDER}
+          y={BORDER}
+          width={WIDTH}
+          height={HEIGHT}
+          rx={WIDTH / 2}
+          ry={WIDTH / 2}
         />
       ),
       fillScale: null,
       strokeScale: 1,
+      height: HEIGHT,
+      width: WIDTH,
+      border: BORDER,
     },
     {
       name: 'diamond',
       shape: (
         <polygon
           points={`
-            0,${SYMBOL_HEIGHT / 2}
-            ${SYMBOL_WIDTH / 2},0
-            ${SYMBOL_WIDTH},${SYMBOL_HEIGHT / 2}
-            ${SYMBOL_WIDTH / 2},${SYMBOL_HEIGHT}
+            0,${HEIGHT / 2}
+            ${WIDTH / 2},0
+            ${WIDTH},${HEIGHT / 2}
+            ${WIDTH / 2},${HEIGHT}
           `}
         />
       ),
       fillScale: null,
       strokeScale: 1,
+      height: HEIGHT,
+      width: WIDTH,
+      border: BORDER,
     },
     {
       name: 'squiggle',
@@ -147,6 +61,9 @@ const DECK_DATA: DeckData = {
       ),
       fillScale: 18,
       strokeScale: 18,
+      height: HEIGHT,
+      width: WIDTH,
+      border: BORDER + 3,
     },
   ],
   colors: ['red', 'green', 'purple'],
@@ -154,25 +71,5 @@ const DECK_DATA: DeckData = {
   numbers: [1, 2, 3]
 };
 
-const attributes = [
-  ['red', 'green', 'purple'],
-  ['solid', 'striped', 'none'],
-  ['oval', 'squiggle', 'diamond'],
-  [1, 2, 3],
-];
-
-for (let i = 0; i < attributes[0].length; i++) {
-  for (let j = 0; j < attributes[1].length; j++) {
-    for (let k = 0; k < attributes[2].length; k++) {
-      for (let l = 0; l < attributes[3].length; l++) {
-        createSvg(
-          DECK_DATA.colors[i],
-          DECK_DATA.shadings[j],
-          DECK_DATA.shapes[k],
-          DECK_DATA.numbers[l],
-          `${i}_${j}_${k}_${l}`
-        );
-      }
-    }
-  }
-}
+const generator = new GeometricDeckGenerator(DECK_DATA);
+generator.exportDeck();
