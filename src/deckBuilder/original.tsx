@@ -19,8 +19,8 @@ const DECK_DATA: DeckData = {
           ry={WIDTH / 2}
         />
       ),
-      fillScale: null,
-      strokeScale: 1,
+      fillScale: 3,
+      strokeScale: 2,
       height: HEIGHT,
       width: WIDTH,
       border: BORDER,
@@ -37,8 +37,8 @@ const DECK_DATA: DeckData = {
           `}
         />
       ),
-      fillScale: null,
-      strokeScale: 1,
+      fillScale: 3,
+      strokeScale: 2,
       height: HEIGHT,
       width: WIDTH,
       border: BORDER,
@@ -59,8 +59,8 @@ const DECK_DATA: DeckData = {
           />
         </g>
       ),
-      fillScale: 18,
-      strokeScale: 18,
+      fillScale: 35,
+      strokeScale: 30,
       height: HEIGHT,
       width: WIDTH,
       border: BORDER + 3,
