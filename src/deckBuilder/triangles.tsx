@@ -5,6 +5,33 @@ const BORDER = 3;
 const HEIGHT = (250 - (BORDER * 2));
 const WIDTH = (100 - (BORDER * 2));
 
+function open(shape: Shape, _color: string, _scale: number | null) {
+  return (
+    <g style={{fill: 'transparent'}}>
+      {shape}
+    </g>
+  );
+}
+
+function solid(shape: Shape, color: string, _scale: number | null) {
+  return (
+    <g style={{fill: color}}>
+      {shape}
+    </g>
+  );
+}
+
+function striped(shape: Shape, color: string, scale: number | null) {
+  return (
+    <g style={{fill: `url(#pattern)`}}>
+      <pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+        <polygon points="15,10 25,10 20,20"/>
+      </pattern>
+      {shape}
+    </g>
+  );
+}
+
 const DECK_DATA: DeckData = {
   shapes: [
     {
@@ -60,7 +87,7 @@ const DECK_DATA: DeckData = {
     },
   ],
   colors: ['#ED254E', '#F9DC5C', '#011936'],
-  shadings: ['solid', 'striped', 'none'],
+  shadings: [open, striped, solid],
   numbers: [1, 3, 5]
 };
 

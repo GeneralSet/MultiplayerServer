@@ -5,6 +5,39 @@ const BORDER = 3;
 const HEIGHT = (250 - (BORDER * 2));
 const WIDTH = (100 - (BORDER * 2));
 
+function open(shape: Shape, _color: string, _scale: number | null) {
+  return (
+    <g style={{fill: 'transparent'}}>
+      {shape}
+    </g>
+  );
+}
+
+function solid(shape: Shape, color: string, _scale: number | null) {
+  return (
+    <g style={{fill: color}}>
+      {shape}
+    </g>
+  );
+}
+
+function striped(shape: Shape, color: string, scale: number | null) {
+  return (
+    <g style={{fill: `url(#pattern)`}}>
+      <pattern
+        id={`pattern`}
+        width="8"
+        height="10"
+        patternUnits="userSpaceOnUse"
+        patternTransform={`rotate(90) ${scale ? `scale(${scale})` : ''}`}
+      >
+        <line stroke={color} strokeWidth="5px" y2="15"/>
+      </pattern>
+      {shape}
+    </g>
+  );
+}
+
 const DECK_DATA: DeckData = {
   shapes: [
     {
@@ -67,7 +100,7 @@ const DECK_DATA: DeckData = {
     },
   ],
   colors: ['red', 'green', 'purple'],
-  shadings: ['solid', 'striped', 'none'],
+  shadings: [open, striped, solid],
   numbers: [1, 2, 3]
 };
 

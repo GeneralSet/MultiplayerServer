@@ -10,9 +10,11 @@ interface SvgData {
   strokeScale: number;
 }
 
+type ShadingFunction = (shape: Shape, color: string,  scale: number | null) => JSX.Element;
+
 interface DeckData {
   shapes: SvgData[];
   colors: string[];
-  shadings: string[];
+  shadings: ShadingFunction[];
   numbers: number[];
 }

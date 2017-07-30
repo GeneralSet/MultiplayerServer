@@ -49,37 +49,6 @@ export default class GeometricDeckGenerator {
     );
   }
 
-  private addFillStyle(shape: Shape, color: string, shading: string, scale: number | null) {
-    let style: {fill: string};
-    let defs: JSX.Element | null = null;
-
-    if (shading === 'solid') {
-      style = {fill: color};
-    } else if (shading === 'striped') {
-      const id = 10;
-      defs = (
-        <pattern
-          id={`pattern${id}`}
-          width="8"
-          height="10"
-          patternUnits="userSpaceOnUse"
-          patternTransform={`rotate(90) ${scale ? `scale(${scale})` : ''}`}
-        >
-          <line stroke={color} strokeWidth="5px" y2="15"/>
-        </pattern>
-      );
-      style = {fill: `url(#pattern${id})`};
-    } else {
-      style = {fill: 'transparent'};
-    }
-    return (
-      <g style={style}>
-        {defs}
-        {shape}
-      </g>
-    );
-  }
-
   private listSymbols(symbol: JSX.Element, length: number, shape: SvgData): JSX.Element[] {
     const symbolList: JSX.Element[] = [];
     for (let i = 0; i < length; i++) {
@@ -114,11 +83,11 @@ export default class GeometricDeckGenerator {
 
   private createSvg(
     color: string,
-    shading: string,
+    shading: ShadingFunction,
     shape: SvgData,
     num: number
   ): JSX.Element {
-    const shapePattern = this.addFillStyle(shape.shape, color, shading, shape.fillScale);
+    const shapePattern = shading(shape.shape, color, shape.fillScale);
     const shapePatternColor = this.addStrokeStyle(shapePattern, color, shape.strokeScale);
     const shapes = this.listSymbols(shapePatternColor, num, shape);
     return this.symbolsToSVG(shapes, shape.fillScale, shape);
