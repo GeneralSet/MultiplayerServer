@@ -93,8 +93,8 @@ export default class Board extends React.Component<Props, State> {
 
   updateBoard(deck: string[]): {deck: string[], board: string[], numberOfSets: number} {
     const board = this.state ? this.state.board : [];
-    let numberOfSets = 0;
-    while (board.length < this.boardSize && numberOfSets < 1) {
+    let numberOfSets = this.state ? this.state.numberOfSets : 0;
+    while (board.length < this.boardSize || numberOfSets < 1) {
       if (deck.length < 1) {
         break;
       }
