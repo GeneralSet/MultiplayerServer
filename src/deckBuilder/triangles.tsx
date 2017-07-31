@@ -5,7 +5,7 @@ const BORDER = 3;
 const HEIGHT = (250 - (BORDER * 2));
 const WIDTH = (90 - (BORDER * 2));
 
-function open(shape: Shape, _color: string, _scale: number | null) {
+function open(shape: JSX.Element, _color: string, _scale: number | null) {
   return (
     <g style={{fill: 'transparent'}}>
       {shape}
@@ -13,7 +13,7 @@ function open(shape: Shape, _color: string, _scale: number | null) {
   );
 }
 
-function gradient(shape: Shape, color: string, _scale: number | null) {
+function gradient(shape: JSX.Element, color: string, _scale: number | null) {
   return (
     <g style={{fill: `url(#Gradient2)`}}>
       <defs>
@@ -27,7 +27,7 @@ function gradient(shape: Shape, color: string, _scale: number | null) {
   );
 }
 
-function triangles(shape: Shape, color: string, scale: number | null) {
+function triangles(shape: JSX.Element, color: string, scale: number | null) {
   return (
     <g style={{fill: `url(#pattern)`}}>
       <defs>

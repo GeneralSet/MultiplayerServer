@@ -5,7 +5,7 @@ const BORDER = 3;
 const HEIGHT = (250 - (BORDER * 2));
 const WIDTH = (90 - (BORDER * 2));
 
-function crinkle(shape: Shape, color: string, _scale: number | null) {
+function crinkle(shape: JSX.Element, color: string, _scale: number | null) {
   return (
     <g style={{filter: `url(#turbuMap)`, fill: color}}>
       <defs>
@@ -19,7 +19,7 @@ function crinkle(shape: Shape, color: string, _scale: number | null) {
   );
 }
 
-function blur(shape: Shape, color: string, _scale: number | null) {
+function blur(shape: JSX.Element, color: string, _scale: number | null) {
   return (
     <g style={{filter: `url(#blurMe)`, fill: color}}>
       <defs>
@@ -32,7 +32,7 @@ function blur(shape: Shape, color: string, _scale: number | null) {
   );
 }
 
-function ink(shape: Shape, color: string, scale: number | null) {
+function ink(shape: JSX.Element, color: string, scale: number | null) {
   return (
     <g style={{filter: `url(#displacementFilter)`, fill: color}}>
       <defs>

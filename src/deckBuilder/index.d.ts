@@ -1,8 +1,7 @@
-type Shape = JSX.Element;
 
-interface SvgData {
+interface Shape {
   name: string;
-  shape: Shape;
+  shape: JSX.Element;
   width: number;
   height: number;
   border: number;
@@ -10,11 +9,22 @@ interface SvgData {
   strokeScale: number;
 }
 
-type ShadingFunction = (shape: Shape, color: string,  scale: number | null) => JSX.Element;
+type ShadingFunction = (shape: JSX.Element, color: string,  scale: number | null) => JSX.Element;
 
 interface DeckData {
-  shapes: SvgData[];
-  colors: string[];
-  shadings: ShadingFunction[];
-  numbers: number[];
+  shapes?: Shape[];
+  colors?: string[];
+  shadings?: ShadingFunction[];
+  numbers?: number[];
+  animation?: JSX.Element[];
+}
+
+type ValidFeatures = 'shapes' | 'colors' | 'shadings' | 'numbers' | 'animation';
+
+interface CardData {
+  shapes?: Shape;
+  colors?: string;
+  shadings?: ShadingFunction;
+  numbers?: number;
+  animation?: JSX.Element;
 }

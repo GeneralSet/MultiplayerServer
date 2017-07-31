@@ -5,7 +5,7 @@ const BORDER = 3;
 const HEIGHT = (250 - (BORDER * 2));
 const WIDTH = (100 - (BORDER * 2));
 
-function open(shape: Shape, _color: string, _scale: number | null) {
+function open(shape: JSX.Element, _color: string, _scale: number | null) {
   return (
     <g style={{fill: 'transparent'}}>
       {shape}
@@ -13,7 +13,7 @@ function open(shape: Shape, _color: string, _scale: number | null) {
   );
 }
 
-function solid(shape: Shape, color: string, _scale: number | null) {
+function solid(shape: JSX.Element, color: string, _scale: number | null) {
   return (
     <g style={{fill: color}}>
       {shape}
@@ -21,7 +21,7 @@ function solid(shape: Shape, color: string, _scale: number | null) {
   );
 }
 
-function striped(shape: Shape, color: string, scale: number | null) {
+function striped(shape: JSX.Element, color: string, scale: number | null) {
   return (
     <g style={{fill: `url(#pattern)`}}>
       <pattern
