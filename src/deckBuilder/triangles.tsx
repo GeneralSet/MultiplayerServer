@@ -3,7 +3,7 @@ import GeometricDeckGenerator from './GeometricDeckGenerator';
 
 const BORDER = 3;
 const HEIGHT = (250 - (BORDER * 2));
-const WIDTH = (100 - (BORDER * 2));
+const WIDTH = (90 - (BORDER * 2));
 
 function open(shape: Shape, _color: string, _scale: number | null) {
   return (

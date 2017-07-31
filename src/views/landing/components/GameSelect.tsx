@@ -14,7 +14,11 @@ export default class GameSelect extends React.Component<Props, {}> {
     },
     {
       gameType: 'triangles',
-      name: 'Triangle World',
+      name: 'Tubular Triangles',
+    },
+    {
+      gameType: 'filters',
+      name: 'Fantastic Filters',
     },
   ];
   private readonly classStyles = {

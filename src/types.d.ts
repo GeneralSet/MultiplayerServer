@@ -1,4 +1,4 @@
-type gameTypes = 'original' | 'triangles';
+type gameTypes = 'original' | 'triangles' | 'filters';
 
 interface SetVarient {
   gameType: gameTypes;
