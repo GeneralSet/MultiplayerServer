@@ -1,5 +1,5 @@
-<svg width="107" height="250" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0)"><g style="stroke:#011936;stroke-width:9;"><g style="fill:url(#pattern);"><defs><pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><polygon points="15,10 25,10 20,20"></polygon></pattern></defs><polygon points="
-            0,0
-            84,0
-            42,244
+<svg width="107" height="250" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0)"><g style="stroke:#F9DC5C;stroke-width:9;"><g style="fill:transparent;"><polygon points="
+            0,244
+            84,244
+            42,0
           "></polygon></g></g></g></svg>
