@@ -20,6 +20,10 @@ export default class GameSelect extends React.Component<Props, {}> {
       gameType: 'filters',
       name: 'Fantastic Filters',
     },
+    {
+      gameType: 'animations',
+      name: 'Awesome Animations',
+    },
   ];
   private readonly classStyles = {
     gameOptions: style({

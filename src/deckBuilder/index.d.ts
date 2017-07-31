@@ -28,3 +28,11 @@ interface CardData {
   numbers?: number;
   animation?: JSX.Element;
 }
+
+// jsx types hack
+
+declare namespace JSX {
+  interface IntrinsicElements {
+    'animateTransform': any;
+  }
+}
