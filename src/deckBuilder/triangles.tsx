@@ -13,9 +13,15 @@ function open(shape: Shape, _color: string, _scale: number | null) {
   );
 }
 
-function solid(shape: Shape, color: string, _scale: number | null) {
+function gradient(shape: Shape, color: string, _scale: number | null) {
   return (
-    <g style={{fill: color}}>
+    <g style={{fill: `url(#Gradient2)`}}>
+      <defs>
+        <linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor={color}/>
+          <stop offset="100%" stopColor="#fff"/>
+        </linearGradient>
+      </defs>
       {shape}
     </g>
   );
@@ -24,9 +30,11 @@ function solid(shape: Shape, color: string, _scale: number | null) {
 function triangles(shape: Shape, color: string, scale: number | null) {
   return (
     <g style={{fill: `url(#pattern)`}}>
-      <pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-        <polygon points="15,10 25,10 20,20"/>
-      </pattern>
+      <defs>
+        <pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+          <polygon points="15,10 25,10 20,20"/>
+        </pattern>
+      </defs>
       {shape}
     </g>
   );
@@ -87,7 +95,7 @@ const DECK_DATA: DeckData = {
     },
   ],
   colors: ['#ED254E', '#F9DC5C', '#011936'],
-  shadings: [open, triangles, solid],
+  shadings: [open, triangles, gradient],
   numbers: [1, 3, 5]
 };
 
