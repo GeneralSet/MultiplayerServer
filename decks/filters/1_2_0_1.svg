@@ -1,0 +1,9 @@
+<svg width="214" height="250" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0)"><g style="stroke:#009688;stroke-width:9;"><g style="filter:url(#blurMe);fill:#009688;"><defs><filter id="blurMe"><feGaussianBlur in="SourceGraphic" stdDeviation="10"></feGaussianBlur></filter></defs><polygon points="
+            0,0
+            84,0
+            42,244
+          "></polygon></g></g></g><g transform="translate(104)"><g style="stroke:#009688;stroke-width:9;"><g style="filter:url(#blurMe);fill:#009688;"><defs><filter id="blurMe"><feGaussianBlur in="SourceGraphic" stdDeviation="10"></feGaussianBlur></filter></defs><polygon points="
+            0,0
+            84,0
+            42,244
+          "></polygon></g></g></g></svg>
