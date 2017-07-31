@@ -1,6 +1,6 @@
 import * as React from 'react';
-// import { style } from 'typestyle';
-import Board from './Board';
+import Board from '../game/Board';
+import GameSelect from './components/GameSelect';
 
 interface Props {}
 
@@ -9,14 +9,6 @@ interface State {
 }
 
 export default class App extends React.Component<Props, State> {
-  // private readonly classStyles = {
-  //   board: style({
-  //     height: '750px',
-  //     width: '700px',
-  //     margin: 'auto',
-  //   }),
-  // };
-
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -45,13 +37,22 @@ export default class App extends React.Component<Props, State> {
     }
     return (
       <div>
-        <h1>Set</h1>
+        <h1>SET</h1>
+        <h4>Object:</h4>
         <p>
-          select 3 cards where for each attribute (color, shading, shape, and number) each card
-          has all the same or all different values
+          To identify SETs of three cards where each individual feature is either all the same OR
+          all diffrent on all three cards.
         </p>
-        <button onClick={() => this.startGame('original')}>Original game</button>
-        <button onClick={() => this.startGame('triangles')}>Triangle World</button>
+        <p>
+          Features:
+        </p>
+        <ul>
+          <li>Color</li>
+          <li>Shape</li>
+          <li>Number</li>
+          <li>Shading</li>
+        </ul>
+        <GameSelect startGame={this.startGame}/>
       </div>
     );
   }
