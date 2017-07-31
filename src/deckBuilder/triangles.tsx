@@ -65,7 +65,7 @@ const DECK_DATA: DeckData = {
         <polygon
           points={`
             0,0
-            ${WIDTH},0
+            ${WIDTH},${HEIGHT / 2}
             0,${HEIGHT}
           `}
         />
