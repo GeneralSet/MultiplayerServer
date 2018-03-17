@@ -1,15 +1,13 @@
 import * as React from 'react';
-import Board from '../game/Board';
+import Board from './components/Board';
 import GameSelect from './components/GameSelect';
-
-interface Props {}
 
 interface State {
   gameType: gameTypes | null;
 }
 
-export default class App extends React.Component<Props, State> {
-  constructor(props: Props) {
+export default class App extends React.Component<{}, State> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       gameType: null,
@@ -37,21 +35,6 @@ export default class App extends React.Component<Props, State> {
     }
     return (
       <div>
-        <h1>SET</h1>
-        <h4>Object:</h4>
-        <p>
-          To identify SETs of three cards where each individual feature is either all the same OR
-          all diffrent on all three cards.
-        </p>
-        <p>
-          Features:
-        </p>
-        <ul>
-          <li>Color</li>
-          <li>Shape</li>
-          <li>Number</li>
-          <li>Shading</li>
-        </ul>
         <GameSelect startGame={this.startGame}/>
       </div>
     );

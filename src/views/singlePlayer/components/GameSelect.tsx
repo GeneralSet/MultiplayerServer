@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { style } from 'typestyle';
-import Card from '../../game/Card';
+import Card from './Card';
 
 interface Props {
   startGame: (gameType: gameTypes) => void;

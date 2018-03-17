@@ -47,6 +47,7 @@ export default class Board extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+
     const deck = this.initDeck();
     const updatedBoard = this.updateBoard(deck);
     this.state = {
