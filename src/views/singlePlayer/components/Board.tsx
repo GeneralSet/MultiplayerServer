@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { media, style } from 'typestyle';
 import Card from './Card';
+import { match } from 'react-router-dom';
 
 interface Props {
-  endGame: () => void;
-  gameType: gameTypes;
+  match: match<{gameType: gameTypes}>;
 }
 
 interface State {
@@ -241,7 +241,6 @@ export default class Board extends React.Component<Props, State> {
               </tr>
             </tbody>
           </table>
-          <button className="ui button" onClick={this.props.endGame}>Quit</button>
         </div>
         <div className={`${this.classStyles.board} ${this.classStyles.flexCenter}`}>
           {this.state.board.map((id: string, index: number) => {
@@ -254,7 +253,7 @@ export default class Board extends React.Component<Props, State> {
                 <Card
                   features={id}
                   selected={this.state.selected.includes(id)}
-                  gameType={this.props.gameType}
+                  gameType={this.props.match.params.gameType}
                 />
               </a>
             );

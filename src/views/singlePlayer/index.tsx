@@ -1,41 +1,103 @@
 import * as React from 'react';
 import Board from './components/Board';
-import GameSelect from './components/GameSelect';
+import Card from './components/Card';
+import { style } from 'typestyle';
+import { Link, Route, match } from 'react-router-dom';
 
-interface State {
-  gameType: gameTypes | null;
+interface Props {
+  match: match<{}>;
 }
 
-export default class App extends React.Component<{}, State> {
-  constructor(props: {}) {
+interface State {
+}
+
+export default class SinglePlayer extends React.Component<Props, State> {
+  private readonly SetVarients: SetVarient[] = [
+    {
+      gameType: 'original',
+      name: 'Original Game',
+    },
+    {
+      gameType: 'triangles',
+      name: 'Tubular Triangles',
+    },
+    {
+      gameType: 'filters',
+      name: 'Fantastic Filters',
+    },
+    {
+      gameType: 'animations',
+      name: 'Awesome Animations',
+    },
+  ];
+
+  private readonly classStyles = {
+    gameOptions: style({
+      display: 'flex',
+      textAlign: 'center',
+    }),
+    selector: style({
+      minWidth: '200px',
+      padding: '10px',
+      margin: '10px',
+      border: '1px solid #ccc',
+      $nest: {
+       '&:hover': {
+         backgroundColor: '#555',
+         color: 'white',
+         cursor: 'pointer',
+       },
+       '&:focus': {
+         backgroundColor: '#555',
+         color: 'white',
+         cursor: 'pointer',
+       }
+     }
+    }),
+  };
+
+  constructor(props: Props) {
     super(props);
     this.state = {
-      gameType: null,
     };
-    this.startGame = this.startGame.bind(this);
-    this.endGame = this.endGame.bind(this);
   }
 
-  startGame(gameType: gameTypes): void {
-    this.setState({gameType});
-  }
-
-  endGame(): void {
-    this.setState({gameType: null});
+  private gamePreviewButton(varient: SetVarient, index: number): JSX.Element | null {
+    if (!this.props.match.isExact) {
+      return null;
+    }
+    return (
+      <Link
+        to={`${this.props.match.url}/${varient.gameType}`}
+        key={index}
+      >
+        <div className={this.classStyles.selector}>
+        <h4>{varient.name}</h4>
+        <Card
+          features="0_0_0_0"
+          selected={false}
+          gameType={varient.gameType}
+        />
+        <Card
+          features="1_1_1_1"
+          selected={false}
+          gameType={varient.gameType}
+        />
+        <Card
+          features="2_2_2_2"
+          selected={false}
+          gameType={varient.gameType}
+        />
+      </div>
+      </Link>
+    );
   }
 
   render() {
-    if (this.state.gameType !== null) {
-      return (
-        <Board
-          endGame={this.endGame}
-          gameType={this.state.gameType}
-        />
-      );
-    }
     return (
-      <div>
-        <GameSelect startGame={this.startGame}/>
+      <div className={this.classStyles.gameOptions}>
+        {this.SetVarients.map((varient: SetVarient, index: number) => this.gamePreviewButton(varient, index))}
+        <Route path={`${this.props.match.url}/:gameType`} component={Board} />
       </div>
     );
   }
