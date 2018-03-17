@@ -9,6 +9,21 @@ server = app.listen(3001, function(){
 
 io = socket(server);
 
+var state = {};
+
 io.on('connection', (socket) => {
-    console.log(socket.id);
+  console.log(state);
+  socket.on('createRoom', function (data) {
+    state[data.roomName] = {
+      users: [data.username]
+    }
+    socket.join(data.roomName);
+    socket.emit('users', state[data.roomName].users);
+  });
+
+  socket.on('join', function (data) {
+    state[data.roomName].users.push(data.username);
+    socket.join(data.roomName);
+    socket.emit('users', state[data.roomName].users);
+  });
 });

@@ -9,6 +9,7 @@
     "@types/react": "^15.0.27",
     "@types/react-dom": "^15.5.0",
     "@types/react-router-dom": "^4.2.5",
+    "autobind-decorator": "^2.1.0",
     "csstips": "^0.2.2",
     "csx": "^8.2.1",
     "jsx-to-html": "^1.1.0",
