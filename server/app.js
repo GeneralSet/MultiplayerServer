@@ -2,24 +2,25 @@
 exports.__esModule = true;
 var express = require("express");
 var socket = require("socket.io");
-var Set_1 = require("../src/Set");
+// import { Set } from '../src/Set';
 var app = express();
 var server = app.listen(3001);
 var io = socket(server);
 var state = {};
-var set = new Set_1.Set();
+// const set = new Set();
 io.on('connection', function (client) {
-    client.on('joinRoom', function (data) {
-        if (state[data.roomName]) {
-            state[data.roomName].users.push(data.username);
+    client.on('joinRoom', function (payload) {
+        if (state[payload.roomName] && state[payload.roomName].users) {
+            state[payload.roomName].users.push(payload.username);
         }
         else {
-            state[data.roomName] = { users: [data.username] };
+            state[payload.roomName] = { users: [payload.username] };
         }
-        client.join(data.roomName);
-        io.sockets["in"](data.roomName).emit('users', state[data.roomName].users);
+        client.join(payload.roomName);
+        io.sockets["in"](payload.roomName).emit('users', state[payload.roomName].users);
     });
-    client.on('start', function (data) {
-        var deck = set.initDeck();
+    client.on('setGameType', function (payload) {
+        state[payload.roomName].gameType = payload.gameType;
+        io.sockets["in"](payload.roomName).emit('setGameType', payload.gameType);
     });
 });

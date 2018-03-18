@@ -3,10 +3,17 @@ function setUsers(payload: string[]): SetUsers {
   return { type: 'SET_USERS', payload };
 }
 
+type SetGameType = { type: 'SET_GAME_TYPE', payload: gameType };
+function setGameType(payload: gameType): SetGameType {
+  return { type: 'SET_GAME_TYPE', payload };
+}
+
 export type Actions = (
-  SetUsers
+  SetUsers |
+  SetGameType
 );
 
 export const actions = {
   setUsers,
+  setGameType,
 };

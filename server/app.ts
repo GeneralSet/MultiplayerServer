@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as socket from 'socket.io';
-import { Set } from '../src/Set';
+// import { Set } from '../src/Set';
 
 const app = express();
 
@@ -11,6 +11,7 @@ const io = socket(server);
 interface State {
   [roomName: string]: {
     users: string[];
+    gameType?: string;
     gameState?: {
       deck: string[];
       board: string[];
@@ -19,26 +20,23 @@ interface State {
   };
 }
 var state: State = {};
-const set = new Set();
+// const set = new Set();
 
 io.on('connection', (client) => {
-  client.on('joinRoom', function (data: {roomName: string, username: string}) {
-    if (state[data.roomName]) {
-      state[data.roomName].users.push(data.username);
+  client.on('joinRoom', function (payload: {roomName: string, username: string}) {
+    if (state[payload.roomName] && state[payload.roomName].users) {
+      state[payload.roomName].users.push(payload.username);
     } else {
-      state[data.roomName] = {users: [data.username]};
+      state[payload.roomName] = {users: [payload.username]};
     }
 
-    client.join(data.roomName);
-    io.sockets.in(data.roomName).emit('users', state[data.roomName].users);
+    client.join(payload.roomName);
+    io.sockets.in(payload.roomName).emit('users', state[payload.roomName].users);
   });
 
-  client.on('start', function (data: {roomName: string}) {
-    const deck = set.initDeck();
-    const initialState = set.updateBoard(deck, [], 0);
-    state[data.roomName].gameState = initialState;
-    io.sockets.in(data.roomName).emit('gameState', state[data.roomName].gameState);
-
+  client.on('setGameType', function (payload: {roomName: string, gameType: string}) {
+    state[payload.roomName].gameType = payload.gameType;
+    io.sockets.in(payload.roomName).emit('setGameType', payload.gameType);
   });
 
 });

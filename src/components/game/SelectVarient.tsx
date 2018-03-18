@@ -4,7 +4,8 @@ import { style } from 'typestyle';
 import Card from './Card';
 
 export interface Props {
-  onClick: (gameType: gameType) => void;
+  onSlecet: (gameType: gameType) => void;
+  selected?: gameType;
 }
 
 @autobind
@@ -50,6 +51,11 @@ export default class SelectVarient extends React.Component<Props, {}> {
        }
      }
     }),
+    active: style({
+      backgroundColor: '#555',
+      color: 'white',
+      cursor: 'pointer',
+    }),
   };
 
   constructor(props: Props) {
@@ -57,10 +63,14 @@ export default class SelectVarient extends React.Component<Props, {}> {
   }
 
   private gamePreviewButton(varient: SetVarient, index: number): JSX.Element | null {
+    const linkClasses = [this.classStyles.selector];
+    if (this.props.selected === varient.gameType) {
+      linkClasses.push(this.classStyles.active);
+    }
     return (
       <a
-        className={this.classStyles.selector}
-        onClick={() => this.props.onClick(varient.gameType)}
+        className={linkClasses.join(' ')}
+        onClick={() => this.props.onSlecet(varient.gameType)}
         key={index}
       >
         <h4>{varient.name}</h4>

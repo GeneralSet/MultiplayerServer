@@ -2,17 +2,21 @@ import * as React from 'react';
 import autobind from 'autobind-decorator';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { actions } from './actions';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
+import SelectVarient from 'components/game/SelectVarient';
+import { setGameType } from './api';
 
 interface Props extends RouteComponentProps<{}> {
-  match: match<{}>;
+  match: match<{roomName: string}>;
 }
 
 interface ReduxProps extends Props {
   dispatch: Dispatch<Props>;
   socket: SocketIOClient.Socket;
   users: string[];
+  gameType: gameType;
 }
 
 interface State {
@@ -23,15 +27,26 @@ class Lobby extends React.Component<ReduxProps, State> {
 
   constructor(props: ReduxProps) {
     super(props);
-    this.state = {
-    };
+    this.props.dispatch(setGameType(this.props.socket));
   }
 
-  render() {
+  private onSlecet(gameType: gameType): void {
+    this.props.socket.emit('setGameType', {roomName: this.props.match.params.roomName, gameType});
+    this.props.dispatch(actions.setGameType(gameType));
+  }
+
+  public render(): JSX.Element {
     return (
-      <ul>
-        {this.props.users.map((user, index) => <li key={index}>{user}</li>)}
-      </ul>
+      <div>
+        <div>Users:</div>
+        <ul>
+          {this.props.users.map((user, index) => <li key={index}>{user}</li>)}
+        </ul>
+        <SelectVarient
+          onSlecet={this.onSlecet}
+          selected={this.props.gameType}
+        />
+      </div>
     );
   }
 }

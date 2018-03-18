@@ -9,3 +9,12 @@ export function onUsers(socket: SocketIOClient.Socket) {
     );
   };
 }
+
+export function setGameType(socket: SocketIOClient.Socket) {
+  return (dispatch: Dispatch<{}>) => {
+    socket.on(
+      'setGameType',
+      (gameType: gameType) => dispatch(actions.setGameType(gameType))
+    );
+  };
+}

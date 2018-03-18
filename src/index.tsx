@@ -6,7 +6,7 @@ import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
 import Game from './views/singlePlayer/Game';
 import MultiPlayer from './views/multiPlayer';
-import Lobby from './views/multiPlayer/lobby';
+import Lobby from './views/multiPlayer/Lobby';
 import { Menu } from './views/menu';
 import { Provider } from 'react-redux';
 import { store } from './store';

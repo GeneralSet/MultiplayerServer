@@ -14,6 +14,6 @@ export default class SinglePlayer extends React.Component<RouteComponentProps<{}
   }
 
   public render() {
-    return <SelectVarient onClick={this.onClick}/>;
+    return <SelectVarient onSlecet={this.onClick}/>;
   }
 }
