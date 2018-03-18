@@ -6,10 +6,10 @@ import { actions } from './actions';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
 import SelectVarient from 'components/game/SelectVarient';
-import { setGameType } from './api';
+import { setGameType, startGame } from './api';
 
 interface Props extends RouteComponentProps<{}> {
-  match: match<{roomName: string}>;
+  match: match<{roomName: string, gameType: gameType}>;
 }
 
 interface ReduxProps extends Props {
@@ -17,6 +17,7 @@ interface ReduxProps extends Props {
   socket: SocketIOClient.Socket;
   users: string[];
   gameType: gameType;
+  gameState: GameState;
 }
 
 interface State {
@@ -28,11 +29,26 @@ class Lobby extends React.Component<ReduxProps, State> {
   constructor(props: ReduxProps) {
     super(props);
     this.props.dispatch(setGameType(this.props.socket));
+    this.props.dispatch(startGame(this.props.socket));
   }
 
   private onSlecet(gameType: gameType): void {
-    this.props.socket.emit('setGameType', {roomName: this.props.match.params.roomName, gameType});
+    this.props.socket.emit(
+      'setGameType',
+      {roomName: this.props.match.params.roomName, gameType}
+    );
     this.props.dispatch(actions.setGameType(gameType));
+  }
+
+  private play(event: React.MouseEvent<HTMLInputElement>): void {
+    event.preventDefault();
+    this.props.socket.emit(
+      'startGame',
+      {roomName: this.props.match.params.roomName}
+    );
+    this.props.history.push(
+      `${this.props.match.url}/${this.props.gameType}`
+    );
   }
 
   public render(): JSX.Element {
@@ -46,6 +62,7 @@ class Lobby extends React.Component<ReduxProps, State> {
           onSlecet={this.onSlecet}
           selected={this.props.gameType}
         />
+        <input type="button" value="Play" onClick={this.play}/>
       </div>
     );
   }

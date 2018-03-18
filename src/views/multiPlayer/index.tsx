@@ -15,6 +15,7 @@ interface ReduxProps extends Props {
   socket: SocketIOClient.Socket;
   users: string[];
   gameType: string;
+  gameState: GameState;
 }
 
 interface State {

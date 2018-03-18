@@ -18,3 +18,12 @@ export function setGameType(socket: SocketIOClient.Socket) {
     );
   };
 }
+
+export function startGame(socket: SocketIOClient.Socket) {
+  return (dispatch: Dispatch<{}>) => {
+    socket.on(
+      'startGame',
+      (gameState: GameState) => dispatch(actions.setGameState(gameState))
+    );
+  };
+}

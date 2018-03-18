@@ -4,7 +4,8 @@ import { style } from 'typestyle';
 import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
-import Game from './views/singlePlayer/Game';
+import SinglePlayerGame from './views/singlePlayer/Game';
+import MultiPlayerGame from './views/multiPlayer/Game';
 import MultiPlayer from './views/multiPlayer';
 import Lobby from './views/multiPlayer/Lobby';
 import { Menu } from './views/menu';
@@ -51,9 +52,10 @@ class App extends React.Component<{}, {}> {
               <Switch>
                 <Route exact={true} path="/" component={Menu}/>
                 <Route exact={true} path="/single_player" component={SinglePlayer}/>
-                <Route exact={true} path="/single_player/:gameType" component={Game} />
+                <Route exact={true} path="/single_player/:gameType" component={SinglePlayerGame} />
                 <Route exact={true} path="/multi_player" component={MultiPlayer}/>
                 <Route exact={true} path="/multi_player/:roomName" component={Lobby}/>
+                <Route exact={true} path="/multi_player/:roomName/:gameType" component={MultiPlayerGame}/>
               </Switch>
             </div>
           </div>

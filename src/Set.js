@@ -6,7 +6,6 @@ var Set = /** @class */ (function () {
         this.featureOptions = 3;
         this.numberOfFeatures = 4;
     }
-    // private readonly cardsForSet = 3;
     Set.prototype.initDeck = function () {
         var deck = [];
         for (var i = 0; i < this.featureOptions; i++) {
@@ -38,7 +37,7 @@ var Set = /** @class */ (function () {
         }
         return true;
     };
-    Set.prototype._isSet = function (ids) {
+    Set.prototype.isSet = function (ids) {
         var selectedFeatures = ids.map(function (id) { return id.split('_'); });
         var _loop_1 = function (i) {
             var attributeValues = selectedFeatures.map(function (features) {
@@ -62,7 +61,7 @@ var Set = /** @class */ (function () {
         for (var i = 0; i < board.length; i++) {
             for (var j = i + 1; j < board.length; j++) {
                 for (var k = j + 1; k < board.length; k++) {
-                    var isValidSet = this._isSet([board[i], board[j], board[k]]);
+                    var isValidSet = this.isSet([board[i], board[j], board[k]]);
                     if (isValidSet) {
                         count++;
                     }

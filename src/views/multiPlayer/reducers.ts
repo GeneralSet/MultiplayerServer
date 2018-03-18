@@ -5,6 +5,7 @@ export const initialState = {
   socket: io('localhost:3001'),
   users: [] as string[],
   gameType: '',
+  gameState: {},
 };
 
 export function reducer(state: typeof initialState = initialState, action: Actions) {
@@ -13,6 +14,8 @@ export function reducer(state: typeof initialState = initialState, action: Actio
       return {...state, users: action.payload };
     case 'SET_GAME_TYPE':
       return {...state, gameType: action.payload };
+    case 'SET_GAME_STATE':
+      return {...state, gameState: action.payload };
     default:
       return state;
   }
