@@ -32,6 +32,14 @@ class Lobby extends React.Component<ReduxProps, State> {
     this.props.dispatch(updateGame(this.props.socket));
   }
 
+  public componentWillUpdate(nextProps: ReduxProps, _nextState: State) {
+    if (nextProps.gameState.board && nextProps.gameState.board.length > 0) {
+      this.props.history.push(
+        `${this.props.match.url}/${this.props.gameType}`
+      );
+    }
+  }
+
   private onSlecet(gameType: gameType): void {
     this.props.socket.emit(
       'setGameType',
@@ -45,9 +53,6 @@ class Lobby extends React.Component<ReduxProps, State> {
     this.props.socket.emit(
       'startGame',
       {roomName: this.props.match.params.roomName}
-    );
-    this.props.history.push(
-      `${this.props.match.url}/${this.props.gameType}`
     );
   }
 
