@@ -3,7 +3,7 @@ import { Actions } from './actions';
 
 export const initialState = {
   socket: io('localhost:3001'),
-  users: [] as string[],
+  users: [] as User[],
   gameType: '',
   gameState: {},
 };

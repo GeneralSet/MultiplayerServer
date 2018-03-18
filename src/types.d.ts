@@ -10,3 +10,8 @@ interface GameState {
   board: string[];
   numberOfSets: number;
 }
+
+interface User {
+  name: string;
+  points: number;
+}

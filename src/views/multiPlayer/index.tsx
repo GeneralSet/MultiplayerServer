@@ -13,7 +13,7 @@ interface Props extends RouteComponentProps<{}> {
 interface ReduxProps extends Props {
   dispatch: Dispatch<Props>;
   socket: SocketIOClient.Socket;
-  users: string[];
+  users: User[];
   gameType: string;
   gameState: GameState;
 }

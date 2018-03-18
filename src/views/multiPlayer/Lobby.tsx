@@ -6,7 +6,7 @@ import { actions } from './actions';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
 import SelectVarient from 'components/game/SelectVarient';
-import { setGameType, startGame } from './api';
+import { setGameType, updateGame } from './api';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{roomName: string, gameType: gameType}>;
@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<{}> {
 interface ReduxProps extends Props {
   dispatch: Dispatch<Props>;
   socket: SocketIOClient.Socket;
-  users: string[];
+  users: User[];
   gameType: gameType;
   gameState: GameState;
 }
@@ -29,7 +29,7 @@ class Lobby extends React.Component<ReduxProps, State> {
   constructor(props: ReduxProps) {
     super(props);
     this.props.dispatch(setGameType(this.props.socket));
-    this.props.dispatch(startGame(this.props.socket));
+    this.props.dispatch(updateGame(this.props.socket));
   }
 
   private onSlecet(gameType: gameType): void {
@@ -56,7 +56,7 @@ class Lobby extends React.Component<ReduxProps, State> {
       <div>
         <div>Users:</div>
         <ul>
-          {this.props.users.map((user, index) => <li key={index}>{user}</li>)}
+          {this.props.users.map((user, index) => <li key={index}>{user.name}</li>)}
         </ul>
         <SelectVarient
           onSlecet={this.onSlecet}

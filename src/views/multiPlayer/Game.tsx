@@ -7,7 +7,7 @@ import Board from 'components/game/Board';
 // import { actions } from './actions';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
-// import { setGameType, startGame } from './api';
+import { updateGame } from './api';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{roomName: string, gameType: gameType}>;
@@ -16,7 +16,7 @@ interface Props extends RouteComponentProps<{}> {
 interface ReduxProps extends Props {
   dispatch: Dispatch<Props>;
   socket: SocketIOClient.Socket;
-  users: string[];
+  users: User[];
   gameType: gameType;
   gameState: GameState;
 }
@@ -27,7 +27,6 @@ interface State {
     isError: boolean,
     message: string
   };
-  points: number;
 }
 
 @autobind
@@ -51,11 +50,15 @@ class Game extends React.Component<ReduxProps, State> {
         isError: false,
         message: ''
       },
-      points: 0
     };
+    this.props.dispatch(updateGame(this.props.socket));
   }
 
-  selectCard(id: string, selectedIndex: number) {
+  public clearSelection(): void {
+    this.setState({selected: []});
+  }
+
+  public selectCard(id: string, selectedIndex: number): void {
     const selected = this.state.selected;
 
     // update selected cards
@@ -72,13 +75,15 @@ class Game extends React.Component<ReduxProps, State> {
     // update board
     if (selected.length >= this.cardsForSet) {
       // TODO verify set on server and update game state
+      this.clearSelection();
+      this.props.socket.emit(
+        'verifySet',
+        {roomName: this.props.match.params.roomName, selected}
+      );
+
     } else {
       this.setState({selected});
     }
-  }
-
-  clearSelection() {
-    this.setState({selected: []});
   }
 
   public render(): JSX.Element {
@@ -91,7 +96,7 @@ class Game extends React.Component<ReduxProps, State> {
           <div className={this.classStyles.flexCenter}>
             <div>Users:</div>
             <ul>
-              {this.props.users.map((user, index) => <li key={index}>{user}</li>)}
+              {this.props.users.map((user, index) => <li key={index}>{user.name}:{user.points}</li>)}
             </ul>
             { this.state.alert.message ?
             (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
@@ -101,10 +106,6 @@ class Game extends React.Component<ReduxProps, State> {
             <button className="ui button" onClick={this.clearSelection}>Clear selection</button>
             <table className="ui table">
               <tbody>
-                <tr>
-                  <td>Points</td>
-                  <td>{this.state.points}</td>
-                </tr>
                 <tr>
                   <td>Remaining Cards</td>
                   <td>{this.props.gameState.deck.length}</td>

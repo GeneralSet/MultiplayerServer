@@ -5,7 +5,7 @@ export function onUsers(socket: SocketIOClient.Socket) {
   return (dispatch: Dispatch<{}>) => {
     socket.on(
       'users',
-      (users: string[]) => dispatch(actions.setUsers(users))
+      (users: User[]) => dispatch(actions.setUsers(users))
     );
   };
 }
@@ -19,10 +19,10 @@ export function setGameType(socket: SocketIOClient.Socket) {
   };
 }
 
-export function startGame(socket: SocketIOClient.Socket) {
+export function updateGame(socket: SocketIOClient.Socket) {
   return (dispatch: Dispatch<{}>) => {
     socket.on(
-      'startGame',
+      'updateGame',
       (gameState: GameState) => dispatch(actions.setGameState(gameState))
     );
   };
