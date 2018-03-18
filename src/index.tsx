@@ -6,6 +6,8 @@ import { BrowserRouter, Link, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
 import MultiPlayer from './views/multiPlayer';
 import { Menu } from './views/menu';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 class App extends React.Component<{}, {}> {
   private readonly classStyles = {
@@ -39,16 +41,18 @@ class App extends React.Component<{}, {}> {
 
   render() {
     return (
-      <BrowserRouter>
-        <div className={this.classStyles.background}>
-          <div className={this.classStyles.purpleCard}>
-            <div className={this.classStyles.title}><Link to="/">SET</Link></div>
-            <Route exact={true} path="/" component={Menu}/>
-            <Route path="/single_player" component={SinglePlayer}/>
-            <Route path="/multi_player" component={MultiPlayer}/>
+      <Provider store={store}>
+        <BrowserRouter>
+          <div className={this.classStyles.background}>
+            <div className={this.classStyles.purpleCard}>
+              <div className={this.classStyles.title}><Link to="/">SET</Link></div>
+              <Route exact={true} path="/" component={Menu}/>
+              <Route path="/single_player" component={SinglePlayer}/>
+              <Route path="/multi_player" component={MultiPlayer}/>
+            </div>
           </div>
-        </div>
-      </BrowserRouter>
+        </BrowserRouter>
+      </Provider>
     );
   }
 }

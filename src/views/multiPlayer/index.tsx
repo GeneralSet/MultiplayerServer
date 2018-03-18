@@ -1,35 +1,37 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
-import * as io from 'socket.io-client';
-// import Lobby from './lobby';
-// import { Route, match, withRouter } from 'react-router-dom';
-import { match, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { onUsers } from './api';
+import { match, withRouter, RouteComponentProps } from 'react-router-dom';
+import { ReduxState } from 'reducers';
 
-interface Props {
-  history: any;
+interface Props extends RouteComponentProps<{}> {
   match: match<{}>;
+}
+
+interface ReduxProps extends Props {
+  dispatch: Dispatch<Props>;
+  socket: SocketIOClient.Socket;
+  users: string[];
 }
 
 interface State {
   roomName: string;
   username: string;
-  users: string[];
 }
 
 @autobind
-class MultiPlayer extends React.Component<Props, State> {
-  private socket: SocketIOClient.Socket;
+class MultiPlayer extends React.Component<ReduxProps, State> {
 
-  constructor(props: Props) {
+  constructor(props: ReduxProps) {
     super(props);
-    this.socket = io('localhost:3001');
 
     this.state = {
       roomName: 'test',
       username: 'tim',
-      users: [],
     };
-    this.socket.on('users', (users: string[]) => this.setState({users}));
+    this.props.dispatch(onUsers(this.props.socket));
   }
 
   setRoomName(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -40,15 +42,15 @@ class MultiPlayer extends React.Component<Props, State> {
     this.setState({username: event.target.value});
   }
 
-  host(event: any): void {
+  host(event: React.MouseEvent<HTMLInputElement>): void {
     event.preventDefault();
-    this.socket.emit('createRoom', {username: this.state.username, roomName: this.state.roomName});
+    this.props.socket.emit('createRoom', {username: this.state.username, roomName: this.state.roomName});
     // this.props.history.push(`${this.props.match.url}/${this.state.roomName}`);
   }
 
-  join(event: any): void {
+  join(event: React.MouseEvent<HTMLInputElement>): void {
     event.preventDefault();
-    this.socket.emit('join', {username: this.state.username, roomName: this.state.roomName});
+    this.props.socket.emit('join', {username: this.state.username, roomName: this.state.roomName});
     // this.props.history.push(`${this.props.match.url}/${this.state.roomName}`);
   }
 
@@ -93,11 +95,19 @@ class MultiPlayer extends React.Component<Props, State> {
           render={() => <Lobby socket={this.socket}/>}
         /> */}
         <ul>
-          {this.state.users.map(user => <li key={user}>{user}</li>)}
+          {this.props.users.map(user => <li key={user}>{user}</li>)}
         </ul>
       </div>
     );
   }
 }
 
-export default withRouter(MultiPlayer as any);
+function mapStateToProps(state: ReduxState, _ownProps: Props) {
+  return state.multiPlayer;
+}
+
+function mapDispatchToProps(dispatch: Dispatch<Props>) {
+  return { dispatch };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MultiPlayer));
