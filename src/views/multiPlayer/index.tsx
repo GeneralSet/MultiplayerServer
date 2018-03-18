@@ -28,8 +28,8 @@ class MultiPlayer extends React.Component<ReduxProps, State> {
     super(props);
 
     this.state = {
-      roomName: 'test',
-      username: 'tim',
+      roomName: '',
+      username: '',
     };
     this.props.dispatch(onUsers(this.props.socket));
   }
@@ -44,14 +44,8 @@ class MultiPlayer extends React.Component<ReduxProps, State> {
 
   host(event: React.MouseEvent<HTMLInputElement>): void {
     event.preventDefault();
-    this.props.socket.emit('createRoom', {username: this.state.username, roomName: this.state.roomName});
-    // this.props.history.push(`${this.props.match.url}/${this.state.roomName}`);
-  }
-
-  join(event: React.MouseEvent<HTMLInputElement>): void {
-    event.preventDefault();
-    this.props.socket.emit('join', {username: this.state.username, roomName: this.state.roomName});
-    // this.props.history.push(`${this.props.match.url}/${this.state.roomName}`);
+    this.props.socket.emit('joinRoom', {username: this.state.username, roomName: this.state.roomName});
+    this.props.history.push(`${this.props.match.url}/${this.state.roomName}`);
   }
 
   render() {
@@ -59,7 +53,6 @@ class MultiPlayer extends React.Component<ReduxProps, State> {
       <div>
         multiPlayer
         <div>
-          <h3>Host</h3>
           <form>
             <label>
               Room name
@@ -71,32 +64,9 @@ class MultiPlayer extends React.Component<ReduxProps, State> {
               <input value={this.state.username} onChange={this.setUsername}/>
             </label>
             <br/>
-            <input type="submit" value="Host" onClick={this.host}/>
+            <input type="submit" value="Enter" onClick={this.host}/>
           </form>
         </div>
-        <div>
-          <h3>Join</h3>
-          <form>
-            <label>
-              Room name
-              <input value={this.state.roomName} onChange={this.setRoomName}/>
-            </label>
-            <br/>
-            <label>
-              Username
-              <input value={this.state.username} onChange={this.setUsername}/>
-            </label>
-            <br/>
-            <input type="submit" value="Join" onClick={this.join}/>
-          </form>
-        </div>
-        {/* <Route
-          path={`${this.props.match.url}/:roomName`}
-          render={() => <Lobby socket={this.socket}/>}
-        /> */}
-        <ul>
-          {this.props.users.map(user => <li key={user}>{user}</li>)}
-        </ul>
       </div>
     );
   }

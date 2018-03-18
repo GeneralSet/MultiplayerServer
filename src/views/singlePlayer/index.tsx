@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Board from './components/Board';
 import Card from './components/Card';
 import { style } from 'typestyle';
-import { Link, Route, match } from 'react-router-dom';
+import { Link, match } from 'react-router-dom';
 
 interface Props {
   match: match<{}>;
@@ -97,7 +96,6 @@ export default class SinglePlayer extends React.Component<Props, State> {
     return (
       <div className={this.classStyles.gameOptions}>
         {this.SetVarients.map((varient: SetVarient, index: number) => this.gamePreviewButton(varient, index))}
-        <Route path={`${this.props.match.url}/:gameType`} component={Board} />
       </div>
     );
   }

@@ -2,9 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { style } from 'typestyle';
 import registerServiceWorker from './registerServiceWorker';
-import { BrowserRouter, Link, Route } from 'react-router-dom';
+import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
+import Board from './views/singlePlayer/components/Board';
 import MultiPlayer from './views/multiPlayer';
+import Lobby from './views/multiPlayer/lobby';
 import { Menu } from './views/menu';
 import { Provider } from 'react-redux';
 import { store } from './store';
@@ -12,7 +14,7 @@ import { store } from './store';
 class App extends React.Component<{}, {}> {
   private readonly classStyles = {
     background: style({
-      backgroundImage: `url("setBox.svg")`,
+      backgroundImage: `url("/setBox.svg")`,
       backgroundSize: 'cover',
       height: '100%',
       display: 'flex',
@@ -46,9 +48,13 @@ class App extends React.Component<{}, {}> {
           <div className={this.classStyles.background}>
             <div className={this.classStyles.purpleCard}>
               <div className={this.classStyles.title}><Link to="/">SET</Link></div>
-              <Route exact={true} path="/" component={Menu}/>
-              <Route path="/single_player" component={SinglePlayer}/>
-              <Route path="/multi_player" component={MultiPlayer}/>
+              <Switch>
+                <Route exact={true} path="/" component={Menu}/>
+                <Route exact={true} path="/single_player" component={SinglePlayer}/>
+                <Route exact={true} path="/single_player/:gameType" component={Board} />
+                <Route exact={true} path="/multi_player" component={MultiPlayer}/>
+                <Route exact={true} path="/multi_player/:roomName" component={Lobby}/>
+              </Switch>
             </div>
           </div>
         </BrowserRouter>

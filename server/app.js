@@ -12,16 +12,13 @@ io = socket(server);
 var state = {};
 
 io.on('connection', (socket) => {
-  socket.on('createRoom', function (data) {
-    state[data.roomName] = {
-      users: [data.username]
+  socket.on('joinRoom', function (data) {
+    if (state[data.roomName]) {
+      state[data.roomName].users.push(data.username);
+    } else {
+      state[data.roomName] = {users: [data.username]};
     }
-    socket.join(data.roomName);
-    io.sockets.in(data.roomName).emit('users', state[data.roomName].users);
-  });
 
-  socket.on('join', function (data) {
-    state[data.roomName].users.push(data.username);
     socket.join(data.roomName);
     io.sockets.in(data.roomName).emit('users', state[data.roomName].users);
   });

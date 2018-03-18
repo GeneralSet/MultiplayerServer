@@ -1,30 +1,47 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { match, withRouter, RouteComponentProps } from 'react-router-dom';
+import { ReduxState } from 'reducers';
 
-interface Props {
-  socket: SocketIOClient.Socket;
+interface Props extends RouteComponentProps<{}> {
+  match: match<{}>;
 }
 
-interface State {
+interface ReduxProps extends Props {
+  dispatch: Dispatch<Props>;
+  socket: SocketIOClient.Socket;
   users: string[];
 }
 
-@autobind
-export default class MultiPlayer extends React.Component<Props, State> {
+interface State {
+}
 
-  constructor(props: Props) {
+@autobind
+class Lobby extends React.Component<ReduxProps, State> {
+
+  constructor(props: ReduxProps) {
     super(props);
     this.state = {
-      users: [],
     };
-    this.props.socket.on('users', (users: string[]) => this.setState({users}));
   }
 
   render() {
     return (
       <ul>
-        {this.state.users.map(user => <li key="user">user</li>)}
+        {this.props.users.map((user, index) => <li key={index}>{user}</li>)}
       </ul>
     );
   }
 }
+
+function mapStateToProps(state: ReduxState, _ownProps: Props) {
+  return state.multiPlayer;
+}
+
+function mapDispatchToProps(dispatch: Dispatch<Props>) {
+  return { dispatch };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Lobby));
