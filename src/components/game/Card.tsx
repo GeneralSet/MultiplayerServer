@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { style } from 'typestyle';
-import UiCard from '../../../components/Card';
+import UiCard from 'components/ui/Card';
 
 export interface CardProps {
   features: string;
   selected: boolean;
-  gameType: gameTypes;
+  gameType: gameType;
 }
 
 export default class Card extends React.Component<CardProps, {}> {
