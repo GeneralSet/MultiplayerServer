@@ -8,15 +8,16 @@ const server = app.listen(3001);
 
 const io = socket(server);
 
+interface Users {
+  [id: string]: {
+    name: string;
+    points: number;
+  };
+}
+
 interface State {
   [roomName: string]: {
-    users: [
-      {
-        // TODO use socket id for adding points.
-        name: string,
-        points: number
-      }
-    ];
+    users: Users;
     gameType?: string;
     gameState?: {
       deck: string[];
@@ -28,25 +29,37 @@ interface State {
 var state: State = {};
 const set = new Set();
 
+function emitUsers(roomName: string, users: Users) {
+  const userKeys = Object.keys(users);
+  const userValues = userKeys.map((v) =>  users[v]);
+  io.sockets.in(roomName).emit('users', userValues);
+}
+
 io.on('connection', (client) => {
-  client.on('joinRoom', function (payload: {roomName: string, username: string}) {
+  client.on('joinRoom', function(payload: {roomName: string, username: string}) {
     const user = { name: payload.username, points: 0 };
-    if (state[payload.roomName] && state[payload.roomName].users) {
-      state[payload.roomName].users.push(user);
-    } else {
-      state[payload.roomName] = {users: [user]};
+    if (!state[payload.roomName]) {
+      state[payload.roomName] = { users: {} };
     }
+    state[payload.roomName].users[client.id] = user;
 
     client.join(payload.roomName);
-    io.sockets.in(payload.roomName).emit('users', state[payload.roomName].users);
+
+    emitUsers(payload.roomName, state[payload.roomName].users);
   });
 
   client.on('setGameType', function (payload: {roomName: string, gameType: string}) {
+    if (state[payload.roomName].gameState !== undefined) {
+      return;
+    }
     state[payload.roomName].gameType = payload.gameType;
     io.sockets.in(payload.roomName).emit('setGameType', payload.gameType);
   });
 
   client.on('startGame', function (payload: {roomName: string }) {
+    if (state[payload.roomName].gameState !== undefined) {
+      return;
+    }
     const deck = set.initDeck();
     const gameState = set.updateBoard(deck, [], 0);
     state[payload.roomName].gameState = gameState;
@@ -57,8 +70,8 @@ io.on('connection', (client) => {
     // check for set
     const isValidSet = set.isSet(payload.selected);
     if (!isValidSet) {
-      // error: 'Not a set.'
-      // points: this user points - 1
+      state[payload.roomName].users[client.id].points -= 1;
+      emitUsers(payload.roomName, state[payload.roomName].users);
       return;
     }
 
@@ -74,9 +87,11 @@ io.on('connection', (client) => {
     });
 
     const updatedState = set.updateBoard(gameState.deck, newBoard, gameState.numberOfSets);
-    // points: this user points - 1
+    state[payload.roomName].users[client.id].points += 1;
     state[payload.roomName].gameState = updatedState;
+
     io.sockets.in(payload.roomName).emit('updateGame', updatedState);
+    emitUsers(payload.roomName, state[payload.roomName].users);
   });
 
 });

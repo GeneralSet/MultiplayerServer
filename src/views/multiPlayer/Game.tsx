@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { style } from 'typestyle';
 import Board from 'components/game/Board';
-// import { actions } from './actions';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
-import { updateGame } from './api';
+import { onUsers, updateGame } from './api';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{roomName: string, gameType: gameType}>;
@@ -51,6 +50,7 @@ class Game extends React.Component<ReduxProps, State> {
         message: ''
       },
     };
+    this.props.dispatch(onUsers(this.props.socket));
     this.props.dispatch(updateGame(this.props.socket));
   }
 
@@ -96,7 +96,7 @@ class Game extends React.Component<ReduxProps, State> {
           <div className={this.classStyles.flexCenter}>
             <div>Users:</div>
             <ul>
-              {this.props.users.map((user, index) => <li key={index}>{user.name}:{user.points}</li>)}
+              {this.props.users.map((user, index) => <li key={index}>{user.name}: {user.points}</li>)}
             </ul>
             { this.state.alert.message ?
             (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
