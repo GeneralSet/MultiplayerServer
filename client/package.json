@@ -2,7 +2,7 @@
   "name": "sets",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://TimBest.github.io/set",
+  "homepage": "http://generalset.io",
   "dependencies": {
     "@types/jest": "^22.2.0",
     "@types/node": "^9.4.7",

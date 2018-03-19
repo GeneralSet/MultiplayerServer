@@ -5,6 +5,7 @@ var socket = require("socket.io");
 var Set_1 = require("../client/src/Set");
 var app = express();
 var server = app.listen(3001);
+app.use(express.static('../client/build'));
 var io = socket(server);
 var state = {};
 var set = new Set_1.Set();

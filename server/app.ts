@@ -6,6 +6,8 @@ const app = express();
 
 const server = app.listen(3001);
 
+app.use(express.static('../client/build'));
+
 const io = socket(server);
 
 interface Users {
