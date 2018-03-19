@@ -1,0 +1,45 @@
+{
+  "name": "sets",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://TimBest.github.io/set",
+  "dependencies": {
+    "@types/jest": "^22.2.0",
+    "@types/node": "^9.4.7",
+    "@types/react": "^16.0.40",
+    "@types/react-dom": "^16.0.4",
+    "@types/react-redux": "^5.0.15",
+    "@types/react-router-dom": "^4.2.5",
+    "@types/react-router-redux": "^5.0.12",
+    "@types/redux": "^3.6.0",
+    "@types/redux-thunk": "^2.1.0",
+    "autobind-decorator": "^2.1.0",
+    "csstips": "^0.2.3",
+    "csx": "^8.5.0",
+    "jsx-to-html": "^1.1.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^4.0.8",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "socket.io-client": "^2.0.4",
+    "typescript": "^2.7.2",
+    "typestyle": "^1.7.2"
+  },
+  "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
+    "gh-pages": "^1.1.0",
+    "node-sass-chokidar": "^1.1.2",
+    "react-scripts-ts": "^2.14.0"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  }
+}

@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as socket from 'socket.io';
-import { Set } from '../src/Set';
+import { Set } from '../client/src/Set';
 
 const app = express();
 
@@ -57,9 +57,6 @@ io.on('connection', (client) => {
   });
 
   client.on('startGame', function (payload: {roomName: string }) {
-    if (state[payload.roomName].gameState !== undefined) {
-      return;
-    }
     const deck = set.initDeck();
     const gameState = set.updateBoard(deck, [], 0);
     state[payload.roomName].gameState = gameState;

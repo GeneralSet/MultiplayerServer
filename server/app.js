@@ -2,7 +2,7 @@
 exports.__esModule = true;
 var express = require("express");
 var socket = require("socket.io");
-var Set_1 = require("../src/Set");
+var Set_1 = require("../client/src/Set");
 var app = express();
 var server = app.listen(3001);
 var io = socket(server);
@@ -31,9 +31,6 @@ io.on('connection', function (client) {
         io.sockets["in"](payload.roomName).emit('setGameType', payload.gameType);
     });
     client.on('startGame', function (payload) {
-        if (state[payload.roomName].gameState !== undefined) {
-            return;
-        }
         var deck = set.initDeck();
         var gameState = set.updateBoard(deck, [], 0);
         state[payload.roomName].gameState = gameState;
