@@ -1,3 +1,4 @@
+#!/usr/bin/env nodejs
 import * as express from 'express';
 import * as socket from 'socket.io';
 import { Set } from '../client/src/Set';

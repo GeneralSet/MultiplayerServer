@@ -1,3 +1,4 @@
+#!/usr/bin/env nodejs
 "use strict";
 exports.__esModule = true;
 var express = require("express");
