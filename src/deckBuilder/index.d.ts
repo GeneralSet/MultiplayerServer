@@ -33,6 +33,6 @@ interface CardData {
 
 declare namespace JSX {
   interface IntrinsicElements {
-    'animateTransform': any;
+    'animateTransform': React.SVGProps<SVGElement>;
   }
 }

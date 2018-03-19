@@ -1,12 +1,15 @@
 import * as React from 'react';
+import autobind from 'autobind-decorator';
 import { style } from 'typestyle';
-import Card from '../../game/Card';
+import Card from './Card';
 
-interface Props {
-  startGame: (gameType: gameTypes) => void;
+export interface Props {
+  onSlecet: (gameType: gameType) => void;
+  selected?: gameType;
 }
 
-export default class GameSelect extends React.Component<Props, {}> {
+@autobind
+export default class SelectVarient extends React.Component<Props, {}> {
   private readonly SetVarients: SetVarient[] = [
     {
       gameType: 'original',
@@ -48,17 +51,26 @@ export default class GameSelect extends React.Component<Props, {}> {
        }
      }
     }),
+    active: style({
+      backgroundColor: '#555',
+      color: 'white',
+      cursor: 'pointer',
+    }),
   };
 
   constructor(props: Props) {
     super(props);
   }
 
-  private gamePreviewButton(varient: SetVarient, index: number): JSX.Element {
+  private gamePreviewButton(varient: SetVarient, index: number): JSX.Element | null {
+    const linkClasses = [this.classStyles.selector];
+    if (this.props.selected === varient.gameType) {
+      linkClasses.push(this.classStyles.active);
+    }
     return (
       <a
-        onClick={() => this.props.startGame(varient.gameType)}
-        className={this.classStyles.selector}
+        className={linkClasses.join(' ')}
+        onClick={() => this.props.onSlecet(varient.gameType)}
         key={index}
       >
         <h4>{varient.name}</h4>
@@ -84,7 +96,7 @@ export default class GameSelect extends React.Component<Props, {}> {
   render() {
     return (
       <div className={this.classStyles.gameOptions}>
-        {this.SetVarients.map((varient: SetVarient, index: number) => this.gamePreviewButton(varient, index))}
+        {this.SetVarients.map(this.gamePreviewButton)}
       </div>
     );
   }

@@ -6,7 +6,7 @@ export interface CardProps {
   children: JSX.Element;
 }
 
-export default class Card extends React.Component<CardProps, null> {
+export default class Card extends React.Component<CardProps, {}> {
   private readonly classStyles = {
     card: style({
       display: 'flex',
