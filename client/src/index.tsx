@@ -29,11 +29,18 @@ class App extends React.Component<{}, {}> {
       borderRadius: '20px',
       border: '3px black solid',
     }),
+    purpleCardFull: style({
+      backgroundColor: '#ac86b9',
+      width: '100%',
+      height: '100%',
+      borderRadius: '0',
+      border: '0',
+    }),
     title: style({
       color: '#fff',
       padding: '20px 0',
       width: '100%',
-      fontSize: '5em',
+      fontSize: '5vh',
       textAlign: 'center'
     }),
   };
@@ -47,7 +54,7 @@ class App extends React.Component<{}, {}> {
       <Provider store={store}>
         <BrowserRouter>
           <div className={this.classStyles.background}>
-            <div className={this.classStyles.purpleCard}>
+            <div className={this.classStyles.purpleCardFull}>
               <div className={this.classStyles.title}><Link to="/">SET</Link></div>
               <Switch>
                 <Route exact={true} path="/" component={Menu}/>

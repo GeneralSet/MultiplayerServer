@@ -15,7 +15,7 @@ export default class Card extends React.Component<CardProps, {}> {
       display: 'flex',
     }),
     image: style({
-      height: '80px',
+      height: '10vh',
     }),
   };
 

@@ -29,7 +29,7 @@ export default class Board extends React.Component<Props, {}> {
       alignContent: 'center',
     }),
     cardWrap: style({
-      width: '210px',
+      width: '25vh',
     }),
   };
 

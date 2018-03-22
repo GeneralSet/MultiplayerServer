@@ -34,7 +34,7 @@ export default class SelectVarient extends React.Component<Props, {}> {
       textAlign: 'center',
     }),
     selector: style({
-      minWidth: '200px',
+      minWidth: '30vh',
       padding: '10px',
       margin: '10px',
       border: '1px solid #ccc',
