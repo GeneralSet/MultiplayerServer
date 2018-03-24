@@ -103,7 +103,6 @@ class Game extends React.Component<ReduxProps, State> {
               {this.state.alert.message}
             </div>) : null
             }
-            <button className="ui button" onClick={this.clearSelection}>Clear selection</button>
             <table className="ui table">
               <tbody>
                 <tr>
