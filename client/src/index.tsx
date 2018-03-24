@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { style } from 'typestyle';
+import { style, cssRule } from 'typestyle';
 import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
@@ -11,6 +11,11 @@ import Lobby from './views/multiPlayer/Lobby';
 import { Menu } from './views/menu';
 import { Provider } from 'react-redux';
 import { store } from './store';
+
+cssRule('html, body, #root', {
+  height: '100%',
+  margin: '0'
+});
 
 class App extends React.Component<{}, {}> {
   private readonly classStyles = {
