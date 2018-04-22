@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import { style } from 'typestyle';
 import Card from './Card';
 
-export interface Props {
+interface Props {
   onSlecet: (gameType: gameType) => void;
   selected?: gameType;
 }
@@ -13,7 +13,7 @@ export default class SelectVarient extends React.Component<Props, {}> {
   private readonly SetVarients: SetVarient[] = [
     {
       gameType: 'original',
-      name: 'Original Game',
+      name: 'Original',
     },
     {
       gameType: 'triangles',
@@ -26,6 +26,10 @@ export default class SelectVarient extends React.Component<Props, {}> {
     {
       gameType: 'animations',
       name: 'Awesome Animations',
+    },
+    {
+      gameType: 'custom',
+      name: 'Custom',
     },
   ];
   private readonly classStyles = {

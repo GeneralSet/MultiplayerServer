@@ -84,10 +84,13 @@ export default class GeometricDeckGenerator {
     shape: Shape,
   ): JSX.Element {
     const numShapes: number = shapes.length;
+    const width = ((numShapes * (shape.width + this.symbolGap ))) + (shape.border * numShapes);
+    const height = shape.height + (shape.border * 2);
     return (
       <svg
-        width={((numShapes * (shape.width + this.symbolGap ))) + (shape.border * numShapes)}
-        height={shape.height + (shape.border * 2)}
+        height="100%"
+        width="100%"
+        viewBox={`0 0 ${width} ${height}`}
         xmlns="http://www.w3.org/2000/svg"
       >
         {shapes}
@@ -137,6 +140,23 @@ export default class GeometricDeckGenerator {
         }
       }
     }
+  }
+
+  public arrayDeck(): FeatureDeck {
+    const deck: FeatureDeck = {};
+    for (let i = 0; i < this.featureOptionsLength; i++) {
+      for (let j = 0; j < this.featureOptionsLength; j++) {
+        for (let k = 0; k < this.featureOptionsLength; k++) {
+          for (let l = 0; l < this.featureOptionsLength; l++) {
+            const filename = `${i}_${j}_${k}_${l}`;
+            const cardData = this.createCardData([i, j, k, l]);
+            const symbol = this.createSvg(cardData);
+            deck[filename] = symbol;
+          }
+        }
+      }
+    }
+    return deck;
   }
 
   public createSymbol(features: number[]): JSX.Element {

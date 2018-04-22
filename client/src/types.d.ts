@@ -1,4 +1,4 @@
-type gameType = 'original' | 'triangles' | 'filters' | 'animations';
+type gameType = 'original' | 'triangles' | 'filters' | 'animations' | 'custom';
 
 interface SetVarient {
   gameType: gameType;
@@ -14,4 +14,8 @@ interface GameState {
 interface User {
   name: string;
   points: number;
+}
+
+interface FeatureDeck {
+  [feature: string]: JSX.Element;
 }
