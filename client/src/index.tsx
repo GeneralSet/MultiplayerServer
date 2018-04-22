@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
-import SinglePlayerGame from './views/singlePlayer/Game';
+import SinglePlayerGame from './views/singlePlayer/game';
 import MultiPlayerGame from './views/multiPlayer/Game';
 import MultiPlayer from './views/multiPlayer';
 import Lobby from './views/multiPlayer/lobby';

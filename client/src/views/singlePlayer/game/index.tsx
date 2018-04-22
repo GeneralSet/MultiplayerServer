@@ -1,10 +1,11 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
-import { style } from 'typestyle';
 import Board from 'components/game/board';
+import PreviousSelection from 'components/game/previousSelection';
 import { match } from 'react-router-dom';
 import { Set } from 'Set';
 import FullscreenPage from 'components/layout/FullscreenPage';
+import './index.css';
 
 interface Props {
   match: match<{gameType: gameType}>;
@@ -13,6 +14,7 @@ interface Props {
 interface State {
   board: string[];
   selected: string[];
+  previousSelection: string[];
   deck: string[];
   alert: {
     isError: boolean,
@@ -27,16 +29,6 @@ export default class Game extends React.Component<Props, State> {
   private set: Set;
   private readonly cardsForSet = 3;
 
-  private readonly classStyles = {
-    flexCenter: style({
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignContent: 'center',
-    }),
-  };
-
   constructor(props: Props) {
     super(props);
     this.set = new Set();
@@ -46,6 +38,7 @@ export default class Game extends React.Component<Props, State> {
       deck: updatedBoard.deck,
       board: updatedBoard.board,
       selected: [],
+      previousSelection: [],
       alert: {
         isError: false,
         message: ''
@@ -88,7 +81,8 @@ export default class Game extends React.Component<Props, State> {
     // ensure right num cards selected
     if (selected.length < this.cardsForSet) {
       this.setState({
-        alert: {isError: true, message: 'Error: not enough cards selected'}
+        alert: {isError: true, message: 'Error: not enough cards selected'},
+        previousSelection: selected
       });
       return false;
     }
@@ -97,8 +91,9 @@ export default class Game extends React.Component<Props, State> {
     const isValidSet = this.set.isSet(selected);
     if (!isValidSet) {
       this.setState({
-        alert: {isError: true, message: `Not a set.`},
-        points: this.state.points - 1
+        alert: {isError: true, message: `-1 Not a set.`},
+        points: this.state.points - 1,
+        previousSelection: selected
       });
       return false;
     }
@@ -112,11 +107,12 @@ export default class Game extends React.Component<Props, State> {
 
     const updatedBoad = this.set.updateBoard(deck, this.state.board, this.state.numberOfSets);
     this.setState({
-      alert: {isError: false, message: 'Set!'},
+      alert: {isError: false, message: '+1 Set!'},
       points: this.state.points + 1,
       board: updatedBoad.board,
       deck: updatedBoad.deck,
-      numberOfSets: updatedBoad.numberOfSets
+      numberOfSets: updatedBoad.numberOfSets,
+      previousSelection: selected
     });
     return true;
   }
@@ -124,29 +120,30 @@ export default class Game extends React.Component<Props, State> {
   render() {
     return (
       <FullscreenPage>
-        <div className="App">
-          <div className={this.classStyles.flexCenter}>
-            { this.state.alert.message ?
-            (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
-              {this.state.alert.message}
-            </div>) : null
-            }
+        <div>
+          <div className="score-board">
             <table className="ui table">
               <tbody>
                 <tr>
-                  <td>Points</td>
                   <td>{this.state.points}</td>
+                  <td>Points</td>
                 </tr>
                 <tr>
-                  <td>Remaining Cards</td>
                   <td>{this.state.deck.length}</td>
+                  <td>Cards Remaining</td>
                 </tr>
                 <tr>
-                  <td>Number of sets</td>
                   <td>{this.state.numberOfSets}</td>
+                  <td>Sets on the Board</td>
                 </tr>
               </tbody>
             </table>
+            <PreviousSelection
+              cards={this.state.previousSelection}
+              gameType={this.props.match.params.gameType}
+              message={this.state.alert.message}
+              success={!this.state.alert.isError}
+            />
           </div>
           <Board
             board={this.state.board}

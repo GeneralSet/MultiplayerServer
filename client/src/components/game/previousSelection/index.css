@@ -1,0 +1,16 @@
+.previous-selection {
+
+}
+
+.previous-selection .cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background-color: rgba(0,0,0, 30%);
+  padding: 3px;
+  border-radius: 4px;
+}
+
+.previous-selection .cards .card svg,
+.previous-selection .cards .card img {
+  height: 30px;
+}
