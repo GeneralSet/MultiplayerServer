@@ -3,10 +3,11 @@ import autobind from 'autobind-decorator';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { style } from 'typestyle';
-import Board from 'components/game/Board';
+import Board from 'components/game/board';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
 import { onUsers, updateGame } from './api';
+import FullscreenPage from 'components/layout/FullscreenPage';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{roomName: string, gameType: gameType}>;
@@ -91,7 +92,7 @@ class Game extends React.Component<ReduxProps, State> {
       return <div>loading...</div>;
     }
     return (
-      <div>
+      <FullscreenPage>
         <div className="App">
           <div className={this.classStyles.flexCenter}>
             <div>Users:</div>
@@ -123,7 +124,7 @@ class Game extends React.Component<ReduxProps, State> {
             onSelect={this.selectCard}
           />
         </div>
-      </div>
+      </FullscreenPage>
     );
   }
 }

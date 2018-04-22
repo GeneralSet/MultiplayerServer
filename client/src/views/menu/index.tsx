@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { style } from 'typestyle';
 import { Link, match } from 'react-router-dom';
+import SetBox from 'components/layout/SetBox';
+import './index.css';
 
 interface Props {
   match: match<{}>;
@@ -10,20 +11,6 @@ interface State {
 }
 
 export class Menu extends React.Component<Props, State> {
-  private readonly classStyles = {
-    nav: style({
-      display: 'grid',
-      width: '200px',
-      margin: '0 auto'
-    }),
-    navItem: style({
-      justifySelf: 'center',
-      textAlign: 'center',
-      padding: '10px 0'
-    }),
-
-  };
-
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -32,14 +19,16 @@ export class Menu extends React.Component<Props, State> {
 
   render(): JSX.Element {
     return (
-        <nav className={this.classStyles.nav}>
-          <Link to="/single_player">
-            <div className={this.classStyles.navItem}>Single Player</div>
+      <SetBox>
+        <nav className="main-nav">
+          <Link to="/single_player" className="main-nav-item">
+            Single Player
           </Link>
-          <Link to="/multi_player">
-            <div className={this.classStyles.navItem}>Multi Player</div>
+          <Link to="/multi_player" className="main-nav-item">
+            Multi Player
           </Link>
         </nav>
+      </SetBox>
     );
   }
 }

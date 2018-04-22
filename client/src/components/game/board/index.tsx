@@ -1,8 +1,8 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
-import { media, style } from 'typestyle';
-import Card from './Card';
+import Card from 'components/game/Card';
 import GeometricDeckGenerator from 'deckBuilder/GeometricDeckGenerator';
+import './index.css';
 
 interface Props {
   board: string[];
@@ -17,29 +17,6 @@ interface State {
 
 @autobind
 export default class Board extends React.Component<Props, State> {
-
-  private readonly classStyles = {
-    board: style(
-      {
-        width: '840px',
-        margin: 'auto',
-      },
-      media({maxWidth: '860px'}, {width: '100%'}),
-    ),
-    flexCenter: style(
-      {
-        display: 'grid',
-        gridTemplateColumns: 'auto auto auto auto',
-        justifyContent: 'center',
-      },
-      media({maxWidth: '600px'}, {gridTemplateColumns: 'auto auto auto'}),
-    ),
-    cardWrap: style(
-      {
-        width: '25vh',
-      },
-    ),
-  };
 
   constructor(props: Props) {
     super(props);
@@ -156,11 +133,11 @@ export default class Board extends React.Component<Props, State> {
 
   public render() {
     return (
-      <div className={`${this.classStyles.board} ${this.classStyles.flexCenter}`}>
+      <div className="board">
         {this.props.board.map((id: string, index: number) => {
           return (
             <a
-              className={this.classStyles.cardWrap}
+              className="card-wrap"
               onClick={() => this.props.onSelect(id, index)}
               key={index}
             >

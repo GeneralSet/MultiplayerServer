@@ -1,7 +1,8 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
-import SelectVarient from 'components/game/SelectVarient';
+import SelectVarient from 'components/game/selectVarient';
 import { RouteComponentProps } from 'react-router-dom';
+import FullscreenPage from 'components/layout/FullscreenPage';
 
 @autobind
 export default class SinglePlayer extends React.Component<RouteComponentProps<{}>, {}> {
@@ -14,6 +15,10 @@ export default class SinglePlayer extends React.Component<RouteComponentProps<{}
   }
 
   public render() {
-    return <SelectVarient onSlecet={this.onClick}/>;
+    return (
+      <FullscreenPage>
+        <SelectVarient onSlecet={this.onClick}/>
+      </FullscreenPage>
+    );
   }
 }

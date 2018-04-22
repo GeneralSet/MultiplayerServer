@@ -5,6 +5,8 @@ import { Dispatch } from 'redux';
 import { onUsers } from './api';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
+import SetBox from 'components/layout/SetBox';
+import './index.css';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{}>;
@@ -52,24 +54,27 @@ class MultiPlayer extends React.Component<ReduxProps, State> {
 
   render() {
     return (
-      <div>
-        multiPlayer
-        <div>
+      <SetBox>
+        <div className="join-room-form">
           <form>
-            <label>
-              Room name
-              <input value={this.state.roomName} onChange={this.setRoomName}/>
-            </label>
-            <br/>
-            <label>
-              Username
-              <input value={this.state.username} onChange={this.setUsername}/>
-            </label>
-            <br/>
-            <input type="submit" value="Enter" onClick={this.host}/>
+            <label htmlFor="RoomName">Room name</label>
+            <input
+              className="form-input"
+              id="RoomName"
+              value={this.state.roomName}
+              onChange={this.setRoomName}
+            />
+            <label htmlFor="Username">Username</label>
+            <input
+              className="form-input"
+              id="Username"
+              value={this.state.username}
+              onChange={this.setUsername}
+            />
+            <input className="submit" type="submit" value="Enter" onClick={this.host}/>
           </form>
         </div>
-      </div>
+      </SetBox>
     );
   }
 }

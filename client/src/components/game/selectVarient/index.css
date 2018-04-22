@@ -1,0 +1,56 @@
+.game-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.game-selector {
+  width: 150px;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+h4 {
+  width: 150px;
+  text-align: center;
+}
+
+.game-selector:hover,
+.game-selector:focus,
+.game-selector.active {
+  background-color: #292929;
+  color: white;
+  cursor: pointer;
+}
+
+.game-selector .cards {
+  width: 150px;
+  height: 130px;
+  position: relative;
+}
+
+.game-selector .card {
+  position: absolute;
+  width: 65px;
+  padding: 10px;
+}
+.game-selector .card img {
+  height: 32px;
+}
+
+.game-selector .card:nth-child(1) {
+  left: 0px;
+  top: 0px;
+  transform: rotate(7deg);
+}
+.game-selector .card:nth-child(2) {
+  left: 50px;
+  top: 25px;
+  transform: rotate(-14deg);
+}
+.game-selector .card:nth-child(3) {
+  left: 1px;
+  top: 55px;
+  transform: rotate(26deg);
+}

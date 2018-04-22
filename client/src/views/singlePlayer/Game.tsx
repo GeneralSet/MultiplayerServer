@@ -1,9 +1,10 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
 import { style } from 'typestyle';
-import Board from 'components/game/Board';
+import Board from 'components/game/board';
 import { match } from 'react-router-dom';
 import { Set } from 'Set';
+import FullscreenPage from 'components/layout/FullscreenPage';
 
 interface Props {
   match: match<{gameType: gameType}>;
@@ -122,37 +123,39 @@ export default class Game extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="App">
-        <div className={this.classStyles.flexCenter}>
-          { this.state.alert.message ?
-          (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
-            {this.state.alert.message}
-          </div>) : null
-          }
-          <table className="ui table">
-            <tbody>
-              <tr>
-                <td>Points</td>
-                <td>{this.state.points}</td>
-              </tr>
-              <tr>
-                <td>Remaining Cards</td>
-                <td>{this.state.deck.length}</td>
-              </tr>
-              <tr>
-                <td>Number of sets</td>
-                <td>{this.state.numberOfSets}</td>
-              </tr>
-            </tbody>
-          </table>
+      <FullscreenPage>
+        <div className="App">
+          <div className={this.classStyles.flexCenter}>
+            { this.state.alert.message ?
+            (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
+              {this.state.alert.message}
+            </div>) : null
+            }
+            <table className="ui table">
+              <tbody>
+                <tr>
+                  <td>Points</td>
+                  <td>{this.state.points}</td>
+                </tr>
+                <tr>
+                  <td>Remaining Cards</td>
+                  <td>{this.state.deck.length}</td>
+                </tr>
+                <tr>
+                  <td>Number of sets</td>
+                  <td>{this.state.numberOfSets}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Board
+            board={this.state.board}
+            selected={this.state.selected}
+            gameType={this.props.match.params.gameType}
+            onSelect={this.selectCard}
+          />
         </div>
-        <Board
-          board={this.state.board}
-          selected={this.state.selected}
-          gameType={this.props.match.params.gameType}
-          onSelect={this.selectCard}
-        />
-      </div>
+      </FullscreenPage>
     );
   }
 }

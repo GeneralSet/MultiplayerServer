@@ -1,0 +1,22 @@
+.board {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  justify-content: center;
+  width: 840px;
+  margin: auto;
+}
+@media only screen and (max-width: 860px) {
+  .board {
+    width: 100%;
+  }
+}
+@media only screen and (max-width: 600px) {
+  .board {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+
+.card-wrap: {
+  width: 25vh;
+}

@@ -2,11 +2,13 @@ import * as React from 'react';
 import autobind from 'autobind-decorator';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { actions } from './actions';
+import { actions } from 'views/multiPlayer/actions';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
-import SelectVarient from 'components/game/SelectVarient';
-import { setGameType, updateGame } from './api';
+import SelectVarient from 'components/game/selectVarient';
+import { setGameType, updateGame } from 'views/multiPlayer/api';
+import FullscreenPage from 'components/layout/FullscreenPage';
+import 'index.css';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{roomName: string, gameType: gameType}>;
@@ -58,7 +60,7 @@ class Lobby extends React.Component<ReduxProps, State> {
 
   public render(): JSX.Element {
     return (
-      <div>
+      <FullscreenPage>
         <div>Users:</div>
         <ul>
           {this.props.users.map((user, index) => <li key={index}>{user.name}</li>)}
@@ -68,7 +70,7 @@ class Lobby extends React.Component<ReduxProps, State> {
           selected={this.props.gameType}
         />
         <input type="button" value="Play" onClick={this.play}/>
-      </div>
+      </FullscreenPage>
     );
   }
 }
