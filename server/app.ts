@@ -26,6 +26,11 @@ interface State {
       deck: string[];
       board: string[];
       numberOfSets: number;
+      previousSelection?: {
+        user: string;
+        valid: boolean;
+        selection: string[];
+      };
     }
   };
 }
@@ -72,6 +77,18 @@ io.on('connection', (client) => {
     if (!isValidSet) {
       state[payload.roomName].users[client.id].points -= 1;
       emitUsers(payload.roomName, state[payload.roomName].users);
+      const gameState = state[payload.roomName].gameState;
+      if (gameState === undefined) {
+        return;
+      }
+      io.sockets.in(payload.roomName).emit(
+        'updateGame',
+        {...gameState, previousSelection: {
+          user: state[payload.roomName].users[client.id].name,
+          valid: false,
+          selection: payload.selected,
+        }}
+      );
       return;
     }
 
@@ -88,9 +105,16 @@ io.on('connection', (client) => {
 
     const updatedState = set.updateBoard(gameState.deck, newBoard, gameState.numberOfSets);
     state[payload.roomName].users[client.id].points += 1;
-    state[payload.roomName].gameState = updatedState;
+    state[payload.roomName].gameState = {
+      ...updatedState,
+      previousSelection: {
+        user: state[payload.roomName].users[client.id].name,
+        valid: true,
+        selection: payload.selected,
+      }
+    };
 
-    io.sockets.in(payload.roomName).emit('updateGame', updatedState);
+    io.sockets.in(payload.roomName).emit('updateGame', state[payload.roomName].gameState);
     emitUsers(payload.roomName, state[payload.roomName].users);
   });
 

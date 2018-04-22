@@ -9,6 +9,11 @@ interface GameState {
   deck: string[];
   board: string[];
   numberOfSets: number;
+  previousSelection?: {
+    user: string;
+    valid: boolean;
+    selection: string[];
+  };
 }
 
 interface User {

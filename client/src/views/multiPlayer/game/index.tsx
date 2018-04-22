@@ -6,8 +6,9 @@ import { style } from 'typestyle';
 import Board from 'components/game/board';
 import { match, withRouter, RouteComponentProps } from 'react-router-dom';
 import { ReduxState } from 'reducers';
-import { onUsers, updateGame } from './api';
+import { onUsers, updateGame } from 'views/multiPlayer/api';
 import FullscreenPage from 'components/layout/FullscreenPage';
+import PreviousSelection from 'components/game/previousSelection';
 
 interface Props extends RouteComponentProps<{}> {
   match: match<{roomName: string, gameType: gameType}>;
@@ -87,6 +88,30 @@ class Game extends React.Component<ReduxProps, State> {
     }
   }
 
+  private previousSelection(): JSX.Element | void {
+    console.log(
+      this.props.gameState.previousSelection
+    );
+    const selection = this.props.gameState.previousSelection;
+    if (selection === undefined) {
+      return;
+    }
+    let message = '';
+    if (selection.valid) {
+      message = `Set found by ${selection.user} (+1)`;
+    } else {
+      message = `Bad guess by ${selection.user} (-1)`;
+    }
+    return (
+      <PreviousSelection
+        cards={selection.selection}
+        gameType={this.props.match.params.gameType}
+        message={message}
+        success={selection.valid}
+      />
+    );
+  }
+
   public render(): JSX.Element {
     if (!this.props.gameState.board || this.props.gameState.board.length < 1) {
       return <div>loading...</div>;
@@ -99,11 +124,6 @@ class Game extends React.Component<ReduxProps, State> {
             <ul>
               {this.props.users.map((user, index) => <li key={index}>{user.name}: {user.points}</li>)}
             </ul>
-            { this.state.alert.message ?
-            (<div className={`ui ${this.state.alert.isError ? 'error' : 'positive'} message`}>
-              {this.state.alert.message}
-            </div>) : null
-            }
             <table className="ui table">
               <tbody>
                 <tr>
@@ -116,6 +136,7 @@ class Game extends React.Component<ReduxProps, State> {
                 </tr>
               </tbody>
             </table>
+            {this.previousSelection()}
           </div>
           <Board
             board={this.props.gameState.board}

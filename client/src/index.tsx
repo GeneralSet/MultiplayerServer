@@ -4,7 +4,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import SinglePlayer from './views/singlePlayer';
 import SinglePlayerGame from './views/singlePlayer/game';
-import MultiPlayerGame from './views/multiPlayer/Game';
+import MultiPlayerGame from './views/multiPlayer/game';
 import MultiPlayer from './views/multiPlayer';
 import Lobby from './views/multiPlayer/lobby';
 import { Menu } from './views/menu';

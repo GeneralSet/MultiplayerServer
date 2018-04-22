@@ -1,5 +1,13 @@
 #!/usr/bin/env nodejs
 "use strict";
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 exports.__esModule = true;
 var express = require("express");
 var socket = require("socket.io");
@@ -44,6 +52,15 @@ io.on('connection', function (client) {
         if (!isValidSet) {
             state[payload.roomName].users[client.id].points -= 1;
             emitUsers(payload.roomName, state[payload.roomName].users);
+            var gameState_1 = state[payload.roomName].gameState;
+            if (gameState_1 === undefined) {
+                return;
+            }
+            io.sockets["in"](payload.roomName).emit('updateGame', __assign({}, gameState_1, { previousSelection: {
+                    user: state[payload.roomName].users[client.id].name,
+                    valid: false,
+                    selection: payload.selected
+                } }));
             return;
         }
         var gameState = state[payload.roomName].gameState;
@@ -57,8 +74,12 @@ io.on('connection', function (client) {
         });
         var updatedState = set.updateBoard(gameState.deck, newBoard, gameState.numberOfSets);
         state[payload.roomName].users[client.id].points += 1;
-        state[payload.roomName].gameState = updatedState;
-        io.sockets["in"](payload.roomName).emit('updateGame', updatedState);
+        state[payload.roomName].gameState = __assign({}, updatedState, { previousSelection: {
+                user: state[payload.roomName].users[client.id].name,
+                valid: true,
+                selection: payload.selected
+            } });
+        io.sockets["in"](payload.roomName).emit('updateGame', state[payload.roomName].gameState);
         emitUsers(payload.roomName, state[payload.roomName].users);
     });
 });
