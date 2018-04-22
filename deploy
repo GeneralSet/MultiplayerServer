@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd client && yarn build
+
+cd ..
+
+cd server && chmod +x ./app.js && pm2 kill && pm2 start app.js
