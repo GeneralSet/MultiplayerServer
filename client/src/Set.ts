@@ -52,7 +52,7 @@ export class Set {
     return true;
   }
 
-  public numberOfSets(board: string[]): number {
+  private numberOfSets(board: string[]): number {
     let count = 0;
     for (let i = 0; i < board.length; i++) {
       for (let j = i + 1; j < board.length; j++) {
@@ -96,10 +96,9 @@ export class Set {
         board.push(deck[randomIndex]);
         deck.splice(randomIndex, 1);
       }
-      if (board.length >= this.boardSize) {
-        numberOfSets = this.numberOfSets(board);
-      }
+      numberOfSets = this.numberOfSets(board);
     }
+    numberOfSets = this.numberOfSets(board);
     return {deck, board, numberOfSets};
   }
 
