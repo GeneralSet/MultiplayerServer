@@ -5,10 +5,23 @@
   margin: 5px;
   padding: 10%;
   border-radius: 5%;
-  background-color: white;
+  background-color: #fff;
   box-shadow: 0 1px 3px 0 #666;
 }
 
-.card.active {
+.card.selected {
   background-color: #cecece;
-};
+}
+
+.card.hint {
+  box-shadow: 0 0 0 3px #573E8E;
+}
+
+.card-content {
+  align-self: center;
+  display: flex;
+}
+
+.card-image {
+  height: 10vh;
+}

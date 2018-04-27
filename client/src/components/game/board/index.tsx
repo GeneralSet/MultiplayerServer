@@ -1,12 +1,13 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
-import Card from 'components/game/Card';
+import Card from 'components/game/card';
 import GeometricDeckGenerator from 'deckBuilder/GeometricDeckGenerator';
 import './index.css';
 
 interface Props {
   board: string[];
   selected: string[];
+  hint?: string[];
   gameType: gameType;
   onSelect: (id: string, index: number) => void;
 }
@@ -144,6 +145,7 @@ export default class Board extends React.Component<Props, State> {
               <Card
                 features={id}
                 selected={this.props.selected.includes(id)}
+                hint={this.props.hint ? this.props.hint.includes(id) : undefined}
                 gameType={this.props.gameType}
                 svg={this.state && this.state.deck ? this.state.deck[id] : undefined}
               />

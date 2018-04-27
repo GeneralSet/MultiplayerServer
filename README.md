@@ -12,4 +12,6 @@ cd client && yarn install
 cd server && yarn install
 ```
 
-## Start
+## Deploy
+- `cd client && yarn build`
+- `cd server && chmod +x ./app.js && pm2 kill && pm2 start app.js`

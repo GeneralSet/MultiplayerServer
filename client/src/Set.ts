@@ -18,7 +18,7 @@ export class Set {
     return deck;
   }
 
-  areAttributesNotEqual(features: string[]): boolean {
+  public areAttributesNotEqual(features: string[]): boolean {
     for (var i = 0; i < features.length; i++) {
       for (var j = i + 1; j < features.length; j++) {
         if (features[i] === features[j]) {
@@ -29,7 +29,7 @@ export class Set {
     return true;
   }
 
-  areAttributesEqual(features: string[]): boolean {
+  public areAttributesEqual(features: string[]): boolean {
     for (var i = 1; i < features.length; i++) {
       if (features[i] !== features[i - 1]) {
         return false;
@@ -38,7 +38,7 @@ export class Set {
     return true;
   }
 
-  isSet(ids: string[]): boolean {
+  public isSet(ids: string[]): boolean {
     const selectedFeatures = ids.map((id) => id.split('_'));
     for (let i = 0; i < this.numberOfFeatures; i++) {
       const attributeValues = selectedFeatures.map((features) => {
@@ -50,10 +50,9 @@ export class Set {
       }
     }
     return true;
-
   }
 
-  numberOfSets(board: string[]): number {
+  public numberOfSets(board: string[]): number {
     let count = 0;
     for (let i = 0; i < board.length; i++) {
       for (let j = i + 1; j < board.length; j++) {
@@ -68,7 +67,22 @@ export class Set {
     return count;
   }
 
-  updateBoard(
+  public hint(board: string[]): string[] {
+    for (let i = 0; i < board.length; i++) {
+      for (let j = i + 1; j < board.length; j++) {
+        for (let k = j + 1; k < board.length; k++) {
+          const potentialSet = [board[i], board[j], board[k]];
+          const isValidSet = this.isSet([board[i], board[j], board[k]]);
+          if (isValidSet) {
+            return potentialSet;
+          }
+        }
+      }
+    }
+    return [];
+  }
+
+  public updateBoard(
     deck: string[],
     board: string[],
     numberOfSets: number

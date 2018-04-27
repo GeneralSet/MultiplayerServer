@@ -70,6 +70,20 @@ var Set = /** @class */ (function () {
         }
         return count;
     };
+    Set.prototype.hint = function (board) {
+        for (var i = 0; i < board.length; i++) {
+            for (var j = i + 1; j < board.length; j++) {
+                for (var k = j + 1; k < board.length; k++) {
+                    var potentialSet = [board[i], board[j], board[k]];
+                    var isValidSet = this.isSet([board[i], board[j], board[k]]);
+                    if (isValidSet) {
+                        return potentialSet;
+                    }
+                }
+            }
+        }
+        return [];
+    };
     Set.prototype.updateBoard = function (deck, board, numberOfSets) {
         while (board.length < this.boardSize || numberOfSets < 1) {
             if (deck.length < 1) {

@@ -14,6 +14,7 @@ interface Props {
 interface State {
   board: string[];
   selected: string[];
+  hint: string[];
   previousSelection: string[];
   deck: string[];
   alert: {
@@ -38,6 +39,7 @@ export default class Game extends React.Component<Props, State> {
       deck: updatedBoard.deck,
       board: updatedBoard.board,
       selected: [],
+      hint: [],
       previousSelection: [],
       alert: {
         isError: false,
@@ -117,6 +119,12 @@ export default class Game extends React.Component<Props, State> {
     return true;
   }
 
+  private hint(_event: React.MouseEvent<HTMLAnchorElement>): void {
+    this.setState({
+      hint: this.set.hint(this.state.board),
+    });
+  }
+
   render() {
     return (
       <FullscreenPage>
@@ -136,6 +144,9 @@ export default class Game extends React.Component<Props, State> {
                   <td>{this.state.numberOfSets}</td>
                   <td>Sets on the Board</td>
                 </tr>
+                <tr>
+                  <td><a onClick={this.hint}>Hint</a></td>
+                </tr>
               </tbody>
             </table>
             <PreviousSelection
@@ -148,6 +159,7 @@ export default class Game extends React.Component<Props, State> {
           <Board
             board={this.state.board}
             selected={this.state.selected}
+            hint={this.state.hint}
             gameType={this.props.match.params.gameType}
             onSelect={this.selectCard}
           />

@@ -1,51 +1,42 @@
 import * as React from 'react';
-import { style } from 'typestyle';
-import UiCard from 'components/ui/Card';
+import './index.css';
 
 interface Props {
   selected: boolean;
+  hint?: boolean;
   features?: string;
   gameType?: gameType;
   svg?: JSX.Element;
 }
 
 export default class Card extends React.Component<Props, {}> {
-  private readonly classStyles = {
-    content: style({
-      alignSelf: 'center',
-      display: 'flex',
-    }),
-    image: style(
-      {
-        height: '10vh',
-      },
-    ),
-  };
-
   constructor(props: Props) {
     super(props);
   }
 
   private image(): JSX.Element {
     if (this.props.svg) {
-      return <div className={this.classStyles.image}>{this.props.svg}</div>;
+      return <div className="card-image">{this.props.svg}</div>;
     } else {
       return (
         <img
           src={`${process.env.PUBLIC_URL}/decks/${this.props.gameType}/${this.props.features}.svg`}
-          className={`${this.classStyles.image}`}
+          className="card-image"
         />
       );
     }
   }
 
   render() {
+    const selected = this.props.selected ? 'selected' : '';
+    const hint = this.props.hint ? 'hint' : '';
+
     return (
-      <UiCard active={this.props.selected}>
-        <div className={this.classStyles.content}>
+      <div className={`card ${selected} ${hint}`}>
+        <div className="card-content">
           {this.image()}
         </div>
-      </UiCard>
+      </div>
     );
   }
 }

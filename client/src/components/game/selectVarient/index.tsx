@@ -1,6 +1,6 @@
 import * as React from 'react';
 import autobind from 'autobind-decorator';
-import Card from 'components/game/Card';
+import Card from 'components/game/card';
 import './index.css';
 
 interface Props {
