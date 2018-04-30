@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import Board from 'components/game/board';
 import PreviousSelection from 'components/game/previousSelection';
 import { match } from 'react-router-dom';
-import { Set } from 'Set';
+import { Set } from 'set';
 import FullscreenPage from 'components/layout/FullscreenPage';
 import './index.css';
 

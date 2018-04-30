@@ -94,10 +94,9 @@ var Set = /** @class */ (function () {
                 board.push(deck[randomIndex]);
                 deck.splice(randomIndex, 1);
             }
-            if (board.length >= this.boardSize) {
-                numberOfSets = this.numberOfSets(board);
-            }
+            numberOfSets = this.numberOfSets(board);
         }
+        numberOfSets = this.numberOfSets(board);
         return { deck: deck, board: board, numberOfSets: numberOfSets };
     };
     return Set;

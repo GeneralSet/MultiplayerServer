@@ -1,7 +1,7 @@
 #!/usr/bin/env nodejs
 import * as express from 'express';
 import * as socket from 'socket.io';
-import { Set } from '../client/src/Set';
+import { Set } from './Set';
 
 const app = express();
 
