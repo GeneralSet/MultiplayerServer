@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-cd client && yarn build-prod
-
-cd ..
-
-cd server && pm2 kill && pm2 start node app.js
+pushd client && \
+    yarn build-prod && \
+    popd
+pushd server && \
+    pm2 kill && \
+    pm2 start node app.js && \
+    popd
