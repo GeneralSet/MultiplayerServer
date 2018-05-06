@@ -5689,8 +5689,8 @@ set-value@^2.0.0:
     split-string "^3.0.1"
 
 "set@https://github.com/GeneralSet/Set":
-  version "1.0.0"
-  resolved "https://github.com/GeneralSet/Set#d9223c2210126152c88757fc874a34e465d875de"
+  version "1.0.1"
+  resolved "https://github.com/GeneralSet/Set#4e440645b36eb15ee6677d6631506ff6f6c1bfc3"
 
 setimmediate@^1.0.4, setimmediate@^1.0.5:
   version "1.0.5"

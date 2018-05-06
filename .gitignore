@@ -8,7 +8,8 @@ node_modules
 
 # production
 /client/build
-/server/*.js
+/server/dist
+/target
 
 # misc
 .DS_Store

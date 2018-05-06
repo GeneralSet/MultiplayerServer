@@ -1,0 +1,12 @@
+[package]
+name = "set"
+version = "0.1.0"
+authors = ["Tim <hello@timothy.best>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.8"
+wasm-bindgen-cli = "0.2.8"
+rand = "*"

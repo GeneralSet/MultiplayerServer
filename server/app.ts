@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as socket from 'socket.io';
-import { Set as GeneralSet } from 'set/pkg/node/set';
+import { loadSet } from './set';
 
 const app = express();
 
@@ -34,7 +34,10 @@ interface State {
   };
 }
 var state: State = {};
-let set = new GeneralSet(4, 3);
+let set: any;
+loadSet((GeneralSet: any) => {
+  set = new GeneralSet(4, 3);
+});
 
 function emitUsers(roomName: string, users: Users) {
   const userKeys = Object.keys(users);
