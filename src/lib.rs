@@ -175,8 +175,16 @@ impl Set {
         }
     }
 
+    fn init_board<'t>(&self, board: &'t String) -> Vec<&'t str> {
+        if board.len() < 1 {
+            return vec![];
+        } else {
+            return board.split(",").collect();
+        }
+    }
+
     pub fn update_board(&self, deck: String, board: String) -> Set {
-        let mut board: Vec<&str> = board.split(",").collect();
+        let mut board: Vec<&str> = self.init_board(&board);
         let mut deck: Vec<&str> = deck.split(",").collect();
 
         let mut number_of_sets = self.number_of_sets(&board);
