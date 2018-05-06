@@ -8,8 +8,11 @@ npm install -g nodemon
 
 // install yarn
 yarn install
-cd client && yarn install
-cd server && yarn install
+/* cd client && yarn install */
+/* cd server && yarn install */
+
+yarn buildClient
+yarn start
 ```
 
 ## Deploy

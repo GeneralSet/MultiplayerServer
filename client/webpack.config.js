@@ -47,15 +47,16 @@ module.exports = {
               },
             ],
           },
+          {
+            test: /\.svg$/,
+            loader: 'svg-inline-loader'
+          }
         ],
       },
     ],
   },
   devServer: {
     port: 3000,
-    historyApiFallback: {
-      index: 'public/index.html'
-    }
   },
 
   // plugins: [

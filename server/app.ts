@@ -5,9 +5,9 @@ import { Set } from './Set';
 
 const app = express();
 
-const server = app.listen(3001);
+const server = app.listen(4001);
 
-app.use(express.static('../client/build'));
+app.use(express.static('../client/dist'));
 
 const io = socket(server);
 

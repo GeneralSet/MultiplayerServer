@@ -1,5 +1,5 @@
 .set-box-background {
-  background-image: url("/setBox.svg");
+  background-image: url("../../../dist/setBox.svg");
   background-size: cover;
   height: 100%;
   display: flex;
