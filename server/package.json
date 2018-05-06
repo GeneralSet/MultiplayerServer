@@ -21,7 +21,7 @@
     "webpack-cli": "^2.1.2"
   },
   "scripts": {
-    "prestart": "webpack -w",
+    "prestart": "webpack -w false",
     "start": "nodemon app.js"
   }
 }
