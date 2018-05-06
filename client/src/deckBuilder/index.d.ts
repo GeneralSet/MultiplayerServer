@@ -1,5 +1,6 @@
 
 interface Shape {
+  name?: string;
   shape: JSX.Element;
   width: number;
   height: number;
