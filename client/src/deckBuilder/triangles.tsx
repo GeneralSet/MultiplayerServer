@@ -1,103 +1,13 @@
-import * as React from 'react';
 import GeometricDeckGenerator from './GeometricDeckGenerator';
-
-const BORDER = 3;
-const HEIGHT = (250 - (BORDER * 2));
-const WIDTH = (90 - (BORDER * 2));
-
-function open(shape: JSX.Element, _color: string, _scale: number | null) {
-  return (
-    <g style={{fill: 'transparent'}}>
-      {shape}
-    </g>
-  );
-}
-
-function gradient(shape: JSX.Element, color: string, _scale: number | null) {
-  return (
-    <g style={{fill: `url(#Gradient2)`}}>
-      <defs>
-        <linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={color}/>
-          <stop offset="100%" stopColor="#fff"/>
-        </linearGradient>
-      </defs>
-      {shape}
-    </g>
-  );
-}
-
-function triangles(shape: JSX.Element, color: string, scale: number | null) {
-  return (
-    <g style={{fill: `url(#pattern)`}}>
-      <defs>
-        <pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-          <polygon points="15,10 25,10 20,20"/>
-        </pattern>
-      </defs>
-      {shape}
-    </g>
-  );
-}
+import { patterns } from './features/patterns';
+import { shapes } from './features/shapes';
 
 const DECK_DATA: DeckData = {
-  shapes: [
-    {
-      name: 'rightSideUp',
-      shape: (
-        <polygon
-          points={`
-            0,0
-            ${WIDTH},0
-            ${WIDTH / 2},${HEIGHT}
-          `}
-        />
-      ),
-      fillScale: 4,
-      strokeScale: 3,
-      height: HEIGHT,
-      width: WIDTH,
-      border: BORDER,
-    },
-    {
-      name: 'right',
-      shape: (
-        <polygon
-          points={`
-            0,0
-            ${WIDTH},${HEIGHT / 2}
-            0,${HEIGHT}
-          `}
-        />
-      ),
-      fillScale: 4,
-      strokeScale: 3,
-      height: HEIGHT,
-      width: WIDTH,
-      border: BORDER,
-    },
-    {
-      name: 'upsideDown',
-      shape: (
-        <polygon
-          points={`
-            0,${HEIGHT}
-            ${WIDTH},${HEIGHT}
-            ${WIDTH / 2},0
-          `}
-        />
-      ),
-      fillScale: 4,
-      strokeScale: 3,
-      height: HEIGHT,
-      width: WIDTH,
-      border: BORDER,
-    },
-  ],
+  shapes: [shapes.rightSideUp, shapes.right, shapes.upsideDown],
   colors: ['#ED254E', '#F9DC5C', '#011936'],
-  shadings: [open, triangles, gradient],
+  shadings: [patterns.open, patterns.triangles, patterns.gradient],
   numbers: [1, 3, 5]
 };
 
 const generator = new GeometricDeckGenerator(DECK_DATA);
-generator.exportDeck('public/decks/triangles/');
+generator.exportDeck('../../dist/decks/triangles/');
