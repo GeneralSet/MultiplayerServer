@@ -6,6 +6,7 @@ const isProductionBuild = process.env.NODE_ENV === "production";
 // const nodeEnv = isProductionBuild ? "production" : "development";
 
 module.exports = {
+  mode: 'development',
   entry: [
     './src/index',
   ],
@@ -20,13 +21,35 @@ module.exports = {
     // https://github.com/facebookincubator/create-react-app/issues/253
     modules: [
       'node_modules',
-      './src'
+      './src',
+      '../src'
     ],
-    extensions: [".js", ".jsx", ".ts", ".tsx", ".wasm"],
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".wasm", ".rs"],
   },
   module: {
     strictExportPresence: true,
     rules: [
+      {
+        test: /\.rs$/,
+        use: [
+          {
+            loader: require.resolve('babel-loader'),
+            options: {
+              compact: true
+            }
+          },
+          {
+            loader: require.resolve('rust-native-wasm-loader'),
+            options: {
+              release: true,
+              wasmBindgen: {
+                wasm2es6js: true,
+                browser: true
+              }
+            }
+          }
+        ]
+      },
       {
         oneOf: [
           // Compile .tsx?

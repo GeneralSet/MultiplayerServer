@@ -9,7 +9,7 @@
     "allowJs": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "rootDir": "src",
+    "rootDirs": ["src", "../src"],
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -22,7 +22,8 @@
   "exclude": [
     "node_modules",
     "webpack.config.js",
-    "dist/static/js/bundle.js"
+    "dist/static/js/bundle.js",
+    "dist/static/js/*.js"
   ],
   "types": [
     "typePatches"

@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import Board from 'components/game/board';
 import PreviousSelection from 'components/game/previousSelection';
 import { match } from 'react-router-dom';
-import { Set as GeneralSet } from 'set/pkg/web/set';
+import { loadSet } from 'set';
 import FullscreenPage from 'components/layout/FullscreenPage';
 import './index.css';
 
@@ -27,27 +27,42 @@ interface State {
 
 @autobind
 export default class Game extends React.Component<Props, State> {
-  private set: GeneralSet;
+  private set: any;
   private readonly cardsForSet = 3;
 
-  constructor(props: Props) {
-    super(props);
-    this.set = new (GeneralSet as any)(4, 3);
-    const deck = this.set.init_deck();
-    const updatedBoard = this.set.update_board(deck, '');
-    this.state = {
-      deck: updatedBoard.get_deck().split(','),
-      board: updatedBoard.get_board().split(','),
-      selected: [],
-      hint: [],
-      previousSelection: [],
-      alert: {
-        isError: false,
-        message: ''
-      },
-      numberOfSets: updatedBoard.sets,
-      points: 0
-    };
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            deck: [],
+            board: [] ,
+            selected: [],
+            hint: [],
+            previousSelection: [],
+            alert: {
+                isError: false,
+                message: ''
+            },
+            numberOfSets: 0,
+            points: 0
+        };
+        loadSet((GeneralSet: any) => {
+            this.set = GeneralSet.new(4, 3);
+            const deck = this.set.init_deck();
+            const updatedBoard = this.set.update_board(deck, '');
+            this.setState({
+                deck: updatedBoard.get_deck().split(','),
+                board: updatedBoard.get_board().split(','),
+                selected: [],
+                hint: [],
+                previousSelection: [],
+                alert: {
+                    isError: false,
+                    message: ''
+                },
+                numberOfSets: updatedBoard.sets,
+                points: 0
+            });
+        });
   }
 
   selectCard(id: string, selectedIndex: number) {

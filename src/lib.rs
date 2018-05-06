@@ -186,8 +186,7 @@ impl Set {
                 break;
             }
             for _i in 0..self.feature_options {
-                //let random_index = (random_f64() * (deck.len() as f64)).floor();
-                let random_index = 0;
+                let random_index = (random_f64() * (deck.len() as f64)).floor() as usize;
                 board.push(deck[random_index]);
                 deck.remove(random_index);
             }

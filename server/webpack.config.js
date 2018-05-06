@@ -9,16 +9,17 @@ module.exports = {
   ],
   target: 'node',
   output: {
+    path: __dirname,
     filename: 'app.js',
   },
   resolve: {
     modules: [
-      'node_modules'
+      'node_modules',
+      '../src'
     ],
     extensions: [".js", ".jsx", ".ts", ".tsx", ".wasm", ".rs"],
   },
   module: {
-    strictExportPresence: true,
     rules: [
       {
         test: /\.tsx?$/,

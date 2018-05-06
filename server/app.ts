@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as socket from 'socket.io';
-import { loadSet } from './set';
+import { loadSet } from 'set';
 
 const app = express();
 
@@ -8,7 +8,7 @@ const server = app.listen(4001);
 
 app.use(express.static('../client/dist'));
 
-const io = socket(server);
+const io = socket(server, { serveClient: false });
 
 interface Users {
   [id: string]: {
