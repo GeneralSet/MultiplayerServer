@@ -2,7 +2,7 @@
   "name": "general-set",
   "version": "1.0.0",
   "scripts": {
-    "client": "cd client && yarn start",
+    "client": "cd client && yarn build",
     "server": "cd server && yarn start",
     "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
   },

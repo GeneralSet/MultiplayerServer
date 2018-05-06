@@ -11,10 +11,10 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 exports.__esModule = true;
 var express = require("express");
 var socket = require("socket.io");
-var Set_1 = require("../client/src/Set");
+var Set_1 = require("./Set");
 var app = express();
-var server = app.listen(3001);
-app.use(express.static('../client/build'));
+var server = app.listen(4001);
+app.use(express.static('../client/dist'));
 var io = socket(server);
 var state = {};
 var set = new Set_1.Set();

@@ -87,4 +87,4 @@ function mapDispatchToProps(dispatch: Dispatch<Props>) {
   return { dispatch };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MultiPlayer));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MultiPlayer) as any);

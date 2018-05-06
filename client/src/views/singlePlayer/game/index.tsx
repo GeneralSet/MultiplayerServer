@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import Board from 'components/game/board';
 import PreviousSelection from 'components/game/previousSelection';
 import { match } from 'react-router-dom';
-import { Set } from 'Set';
+import { Set } from 'set';
 import FullscreenPage from 'components/layout/FullscreenPage';
 import './index.css';
 
@@ -27,7 +27,7 @@ interface State {
 
 @autobind
 export default class Game extends React.Component<Props, State> {
-  private set: Set;
+  private set: any; // Set<any>;
   private readonly cardsForSet = 3;
 
   constructor(props: Props) {
