@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 pushd client && \
-    yarn build-prod && \
+    (yarn build-prod || true) && \
     popd
 pushd server && \
     pm2 kill && \

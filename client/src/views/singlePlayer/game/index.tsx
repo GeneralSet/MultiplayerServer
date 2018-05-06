@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import Board from 'components/game/board';
 import PreviousSelection from 'components/game/previousSelection';
 import { match } from 'react-router-dom';
-import { wasm } from 'set';
+import { Set as GeneralSet } from 'set/pkg/web/set';
 import FullscreenPage from 'components/layout/FullscreenPage';
 import './index.css';
 
@@ -27,19 +27,17 @@ interface State {
 
 @autobind
 export default class Game extends React.Component<Props, State> {
-  private set: any; // Set<any>;
+  private set: GeneralSet;
   private readonly cardsForSet = 3;
 
   constructor(props: Props) {
     super(props);
-    wasm.then((set: any) => {
-      this.set = new Set();
-    });
-    const deck = this.set.initDeck();
-    const updatedBoard = this.set.updateBoard(deck, [], 0);
+    this.set = new (GeneralSet as any)(4, 3);
+    const deck = this.set.init_deck();
+    const updatedBoard = this.set.update_board(deck, '');
     this.state = {
-      deck: updatedBoard.deck,
-      board: updatedBoard.board,
+      deck: updatedBoard.get_deck().split(','),
+      board: updatedBoard.get_board().split(','),
       selected: [],
       hint: [],
       previousSelection: [],
@@ -47,7 +45,7 @@ export default class Game extends React.Component<Props, State> {
         isError: false,
         message: ''
       },
-      numberOfSets: updatedBoard.numberOfSets,
+      numberOfSets: updatedBoard.sets,
       points: 0
     };
   }
@@ -92,7 +90,7 @@ export default class Game extends React.Component<Props, State> {
     }
 
     // check for set
-    const isValidSet = this.set.isSet(selected);
+    const isValidSet = this.set.is_set(selected.join(','));
     if (!isValidSet) {
       this.setState({
         alert: {isError: true, message: `-1 Not a set.`},
@@ -109,13 +107,13 @@ export default class Game extends React.Component<Props, State> {
       board.splice(board.indexOf(id), 1);
     });
 
-    const updatedBoad = this.set.updateBoard(deck, this.state.board, this.state.numberOfSets);
+    const updatedBoard = this.set.update_board(deck.join(','), this.state.board.join(','));
     this.setState({
       alert: {isError: false, message: '+1 Set!'},
       points: this.state.points + 1,
-      board: updatedBoad.board,
-      deck: updatedBoad.deck,
-      numberOfSets: updatedBoad.numberOfSets,
+      board: updatedBoard.get_board().split(','),
+      deck: updatedBoard.get_deck().split(','),
+      numberOfSets: updatedBoard.sets,
       previousSelection: selected
     });
     return true;
@@ -123,7 +121,7 @@ export default class Game extends React.Component<Props, State> {
 
   private hint(_event: React.MouseEvent<HTMLAnchorElement>): void {
     this.setState({
-      hint: this.set.hint(this.state.board),
+      hint: this.set.hint(this.state.board.join(',')).split(','),
     });
   }
 
