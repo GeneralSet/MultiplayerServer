@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export NODE_ENV=production
+
 pushd client && \
     (yarn install; yarn build-prod || true) && \
     popd

@@ -82,12 +82,15 @@ module.exports = {
     port: 3000,
   },
 
-  // plugins: [
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+    })
   //   // Generates an `index.html` file with the <script> injected.
   //   new HtmlWebpackPlugin(),
   //   // Perform type checking and linting in a separate process to speed up compilation
   //   new ForkTsCheckerWebpackPlugin(),
-  // ],
+  ],
   node: {
     fs: 'empty'
   },
