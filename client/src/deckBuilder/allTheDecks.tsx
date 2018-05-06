@@ -3,39 +3,43 @@ import { patterns } from './features/patterns';
 import { shapes } from './features/shapes';
 
 const NUM_DECKS = 1;
+const OPTIONS = 3;
 
 function getRand<T>(options: T[]): T[] {
   const selected: T[] = [];
-  let index = Math.floor(Math.random() * options.length);
-  selected.push(options[index]);
-  options = options.splice(index, 1);
-
-  index = Math.floor(Math.random() * options.length);
-  selected.push(options[index]);
-  options = options.splice(index, 1);
-
-  index = Math.floor(Math.random() * options.length);
-  selected.push(options[index]);
-
+  while (selected.length < OPTIONS) {
+    const index = Math.floor(Math.random() * options.length);
+    if (!selected.includes(options[index])) {
+      selected.push(options[index]);
+    }
+  }
   return selected;
 }
 
+function getRandColors(): string[] {
+  const colors: string[] = [];
+  while (colors.length < OPTIONS) {
+    const color = '#' + (Math.random()*0xFFFFFF<<0).toString(16);
+    if (!colors.includes(color)) {
+      colors.push(color);
+    }
+  }
+  return colors;
+}
+
 const validNumbers = [1, 2, 3, 4, 5];
-// const validShapes = Object.keys(shapes);
-// const validShaddings = Object.keys(patterns);
-const validColors = ['#ED254E', '#F9DC5C', '#011936'];
+const validShapes = Object.values(shapes);
+const validShaddings = Object.values(patterns);
+const validColors = getRandColors();
 
 for (let i = 0; i < NUM_DECKS; i++) {
   const DECK_DATA = {
-    // shapes: getRand(validShapes),
-    shapes: [shapes.rightSideUp, shapes.right, shapes.upsideDown],
+    shapes: getRand(validShapes),
     colors: getRand(validColors),
-    shadings: [patterns.open, patterns.striped, patterns.triangles],
-
-    // shadings: getRand(validShaddings),
+    shadings: getRand(validShaddings),
     numbers: getRand(validNumbers),
   };
 
-  const generator = new GeometricDeckGenerator(DECK_DATA );
+  const generator = new GeometricDeckGenerator(DECK_DATA as any);
   generator.exportDeck(`./decks/${i}/`);
 }

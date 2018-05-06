@@ -55,7 +55,7 @@ export const patterns = {
             baseFrequency="0.01"
             numOctaves="2"
             result="turbulence"
-            data-filterId="3"
+            data-filterid="3"
           />
           <feDisplacementMap
             xChannelSelector="R"
