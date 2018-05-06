@@ -2,11 +2,8 @@
   "name": "general-set",
   "version": "1.0.0",
   "scripts": {
-    "client": "cd client && yarn build",
+    "build": "cd client && yarn build",
     "server": "cd server && yarn start",
-    "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
-  },
-  "devDependencies": {
-    "concurrently": "^3.5.0"
+    "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn build\""
   }
 }
