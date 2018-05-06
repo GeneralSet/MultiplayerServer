@@ -62,7 +62,7 @@ export default class Board extends React.Component<Props, State> {
       const DECK_DATA: DeckData = {
         shapes: [
           {
-            name: 'oval',
+            // name: 'oval',
             shape: (
               <rect
                 x={BORDER}
@@ -80,7 +80,7 @@ export default class Board extends React.Component<Props, State> {
             border: BORDER,
           },
           {
-            name: 'diamond',
+            // name: 'diamond',
             shape: (
               <polygon
                 points={`
@@ -98,7 +98,7 @@ export default class Board extends React.Component<Props, State> {
             border: BORDER,
           },
           {
-            name: 'squiggle',
+            // name: 'squiggle',
             shape: (
               <g transform="translate(-45, -10) scale(.07437774524)">
                 <path
