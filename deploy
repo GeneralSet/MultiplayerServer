@@ -4,6 +4,7 @@ pushd client && \
     (yarn build-prod || true) && \
     popd
 pushd server && \
+    (yarn prestart || true) && \
     pm2 kill && \
     pm2 start node app.js && \
     popd
