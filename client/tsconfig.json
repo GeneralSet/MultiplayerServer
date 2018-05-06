@@ -4,7 +4,7 @@
     "module": "commonjs",
     "baseUrl": "./src",
     "target": "es5",
-    "lib": ["es7", "dom"],
+    "lib": ["es2017", "es7", "es6", "dom"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
