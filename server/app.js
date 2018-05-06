@@ -1,4 +1,3 @@
-#!/usr/bin/env nodejs
 "use strict";
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -11,13 +10,13 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 exports.__esModule = true;
 var express = require("express");
 var socket = require("socket.io");
-var Set_1 = require("./Set");
+var set_1 = require("set/pkg/node/set");
 var app = express();
 var server = app.listen(4001);
 app.use(express.static('../client/dist'));
 var io = socket(server);
 var state = {};
-var set = new Set_1.Set();
+var set = new set_1.Set(4, 3);
 function emitUsers(roomName, users) {
     var userKeys = Object.keys(users);
     var userValues = userKeys.map(function (v) { return users[v]; });
@@ -41,14 +40,14 @@ io.on('connection', function (client) {
         io.sockets["in"](payload.roomName).emit('setGameType', payload.gameType);
     });
     client.on('startGame', function (payload) {
-        var deck = set.initDeck();
-        var gameState = set.updateBoard(deck, [], 0);
+        var deck = set.init_deck();
+        var gameState = set.update_board(deck, [], 0);
         state[payload.roomName].gameState = gameState;
         io.sockets["in"](payload.roomName).emit('updateGame', gameState);
     });
     client.on('verifySet', function (payload) {
         // check for set
-        var isValidSet = set.isSet(payload.selected);
+        var isValidSet = set.is_set(payload.selected);
         if (!isValidSet) {
             state[payload.roomName].users[client.id].points -= 1;
             emitUsers(payload.roomName, state[payload.roomName].users);
@@ -72,7 +71,7 @@ io.on('connection', function (client) {
         payload.selected.forEach(function (id) {
             newBoard.splice(newBoard.indexOf(id), 1);
         });
-        var updatedState = set.updateBoard(gameState.deck, newBoard, gameState.numberOfSets);
+        var updatedState = set.update_board(gameState.deck, newBoard, gameState.numberOfSets);
         state[payload.roomName].users[client.id].points += 1;
         state[payload.roomName].gameState = __assign({}, updatedState, { previousSelection: {
                 user: state[payload.roomName].users[client.id].name,

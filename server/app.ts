@@ -1,7 +1,6 @@
-#!/usr/bin/env nodejs
 import * as express from 'express';
 import * as socket from 'socket.io';
-import { Set } from './Set';
+import { Set as GeneralSet } from 'set/pkg/node/set';
 
 const app = express();
 
@@ -35,7 +34,7 @@ interface State {
   };
 }
 var state: State = {};
-const set = new Set();
+let set = new GeneralSet(4, 3);
 
 function emitUsers(roomName: string, users: Users) {
   const userKeys = Object.keys(users);
@@ -65,15 +64,15 @@ io.on('connection', (client) => {
   });
 
   client.on('startGame', function (payload: {roomName: string }) {
-    const deck = set.initDeck();
-    const gameState = set.updateBoard(deck, [], 0);
+    const deck = set.init_deck();
+    const gameState = set.update_board(deck, [], 0);
     state[payload.roomName].gameState = gameState;
     io.sockets.in(payload.roomName).emit('updateGame', gameState);
   });
 
   client.on('verifySet', function (payload: {roomName: string, selected: string[] }) {
     // check for set
-    const isValidSet = set.isSet(payload.selected);
+    const isValidSet = set.is_set(payload.selected);
     if (!isValidSet) {
       state[payload.roomName].users[client.id].points -= 1;
       emitUsers(payload.roomName, state[payload.roomName].users);
@@ -103,7 +102,7 @@ io.on('connection', (client) => {
       newBoard.splice(newBoard.indexOf(id), 1);
     });
 
-    const updatedState = set.updateBoard(gameState.deck, newBoard, gameState.numberOfSets);
+    const updatedState = set.update_board(gameState.deck, newBoard, gameState.numberOfSets);
     state[payload.roomName].users[client.id].points += 1;
     state[payload.roomName].gameState = {
       ...updatedState,
