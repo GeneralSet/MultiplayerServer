@@ -27,7 +27,7 @@ interface State {
 
 @autobind
 export default class Game extends React.Component<Props, State> {
-  private set: Set;
+  private set: any; // Set<any>;
   private readonly cardsForSet = 3;
 
   constructor(props: Props) {

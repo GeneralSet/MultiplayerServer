@@ -24,3 +24,5 @@ interface User {
 interface FeatureDeck {
   [feature: string]: JSX.Element;
 }
+
+declare module 'set';

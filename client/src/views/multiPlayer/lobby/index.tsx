@@ -83,4 +83,4 @@ function mapDispatchToProps(dispatch: Dispatch<Props>) {
   return { dispatch };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Lobby));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Lobby) as any);

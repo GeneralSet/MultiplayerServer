@@ -158,4 +158,4 @@ function mapDispatchToProps(dispatch: Dispatch<Props>) {
   return { dispatch };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Game));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Game) as any);
