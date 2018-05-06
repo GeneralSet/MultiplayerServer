@@ -135,6 +135,9 @@ export default class GeometricDeckGenerator {
             const cardData = this.createCardData([i, j, k, l]);
             const symbol = this.createSvg(cardData);
             const svg = ReactDOMServer.renderToStaticMarkup(symbol);
+            if (!fs.existsSync(path)) {
+                fs.mkdirSync(path);
+            }
             fs.writeFile(`${path}${filename}.svg`, svg, () => null);
           }
         }
