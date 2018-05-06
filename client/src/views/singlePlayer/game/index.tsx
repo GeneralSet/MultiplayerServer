@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import Board from 'components/game/board';
 import PreviousSelection from 'components/game/previousSelection';
 import { match } from 'react-router-dom';
-import { Set } from 'set';
+import { wasm } from 'set';
 import FullscreenPage from 'components/layout/FullscreenPage';
 import './index.css';
 
@@ -32,7 +32,9 @@ export default class Game extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.set = new Set();
+    wasm.then((set: any) => {
+      this.set = new Set();
+    });
     const deck = this.set.initDeck();
     const updatedBoard = this.set.updateBoard(deck, [], 0);
     this.state = {
