@@ -16,7 +16,7 @@
     "webpack-cli": "^2.1.2"
   },
   "scripts": {
-    "prestart": "tsc app.ts",
+    "prestart": "tsc app.ts || true",
     "start": "nodemon app.js"
   }
 }
