@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 pushd client && \
-    (yarn build-prod || true) && \
+    (yarn install; yarn build-prod || true) && \
     popd
 pushd server && \
-    (yarn prestart || true) && \
+    (yarn install; yarn prestart || true) && \
     pm2 kill && \
     pm2 start node app.js && \
     popd
