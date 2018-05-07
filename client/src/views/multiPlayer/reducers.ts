@@ -2,7 +2,7 @@ import * as io from 'socket.io-client';
 import { Actions } from './actions';
 
 export const initialState = {
-  socket: io(process.env.NODE_ENV === 'development' ? 'localhost:3001' : 'generalset.io'),
+  socket: io(process.env.NODE_ENV === 'development' ? 'localhost:4001' : 'generalset.io'),
   users: [] as User[],
   gameType: '',
   gameState: {},
