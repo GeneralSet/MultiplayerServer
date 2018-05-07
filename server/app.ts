@@ -36,7 +36,7 @@ interface State {
 var state: State = {};
 let set: any;
 loadSet((GeneralSet: any) => {
-  set = new GeneralSet(4, 3);
+  set = GeneralSet.new(4, 3);
 });
 
 function emitUsers(roomName: string, users: Users) {
@@ -68,14 +68,19 @@ io.on('connection', (client) => {
 
   client.on('startGame', function (payload: {roomName: string }) {
     const deck = set.init_deck();
-    const gameState = set.update_board(deck, [], 0);
+    const updatedBoard = set.update_board(deck, '');
+    const gameState = {
+      deck: updatedBoard.get_deck().split(','),
+      board: updatedBoard.get_board().split(','),
+      numberOfSets: updatedBoard.sets
+    };
     state[payload.roomName].gameState = gameState;
     io.sockets.in(payload.roomName).emit('updateGame', gameState);
   });
 
   client.on('verifySet', function (payload: {roomName: string, selected: string[] }) {
     // check for set
-    const isValidSet = set.is_set(payload.selected);
+    const isValidSet = set.is_set(payload.selected.join(','));
     if (!isValidSet) {
       state[payload.roomName].users[client.id].points -= 1;
       emitUsers(payload.roomName, state[payload.roomName].users);
@@ -105,10 +110,12 @@ io.on('connection', (client) => {
       newBoard.splice(newBoard.indexOf(id), 1);
     });
 
-    const updatedState = set.update_board(gameState.deck, newBoard, gameState.numberOfSets);
+    const updatedBoard = set.update_board(gameState.deck.join(','), newBoard.join(','));
     state[payload.roomName].users[client.id].points += 1;
     state[payload.roomName].gameState = {
-      ...updatedState,
+      deck: updatedBoard.get_deck().split(','),
+      board: updatedBoard.get_board().split(','),
+      numberOfSets: updatedBoard.sets,
       previousSelection: {
         user: state[payload.roomName].users[client.id].name,
         valid: true,
