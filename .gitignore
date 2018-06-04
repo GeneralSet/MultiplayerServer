@@ -10,7 +10,7 @@ node_modules
 /client/build
 /client/dist/*.wasm
 /server/dist
-/target
+target
 
 # misc
 .DS_Store
