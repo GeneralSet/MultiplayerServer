@@ -1,12 +1,8 @@
 [package]
-name = "set"
+name = "MultiplayerServer"
 version = "0.1.0"
 authors = ["Tim <hello@timothy.best>"]
-
-[lib]
-crate-type = ["cdylib"]
+edition = "2018"
 
 [dependencies]
-wasm-bindgen = "0.2.8"
-wasm-bindgen-cli = "0.2.8"
-rand = "*"
+actix-web = "0.7"

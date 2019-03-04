@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="400">
-  <rect width="400" height="400" fill="#292929"/>
-  <path d="M0 0 V200 L200 0 Z" fill="#f9575a"/>
-  <path d="M400 400 H75 L400 50 Z" fill="#3ecf8e"/>
-</svg>
