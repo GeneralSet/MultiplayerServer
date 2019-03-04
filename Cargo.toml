@@ -5,6 +5,8 @@ authors = ["Tim <hello@timothy.best>"]
 edition = "2018"
 
 [dependencies]
+rand = "*"
+
 log = "*"
 env_logger = "*"
 
