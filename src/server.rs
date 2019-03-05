@@ -15,7 +15,7 @@ pub struct Message(pub String);
 #[derive(Serialize, Deserialize)]
 pub struct ClientUser {
     name: String,
-    score: isize,
+    points: isize,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -39,14 +39,14 @@ pub struct GameUpdateMessage {
 pub struct User {
     addr: Recipient<Message>,
     name: String,
-    score: isize,
+    points: isize,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Selection {
     user: String,
     valid: bool,
-    selection: Vec<String>,
+    selection: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -88,8 +88,8 @@ impl Actor for Server {
 
 
 impl Server {
-    fn emit_users(&mut self, room_name: String, skip_id: usize) {
-        if let Some(session) = self.sessions.get_mut(&room_name) {
+    fn emit_users(&mut self, room_name: &String, skip_id: usize) {
+        if let Some(session) = self.sessions.get_mut(room_name) {
 
             let mut message = UserMessage {
                 eventType: "users".to_string(),
@@ -99,7 +99,7 @@ impl Server {
                 message.users.push(
                     ClientUser {
                         name: user.name.clone(),
-                        score: user.score.clone(),
+                        points: user.points.clone(),
                     }
                 )
             }
@@ -115,37 +115,38 @@ impl Server {
         }
     }
 
-    fn emit_game_type(&mut self, room_name: String, game_type: String) {
-        if let Some(session) = self.sessions.get_mut(&room_name) {
-            let message = GameTypeMessage {
-                eventType: "setGameType".to_string(),
-                gameType: game_type,
-            };
-            let message_string = match serde_json::to_string(&message) {
-                JSON_Result::Ok(u) => u,
-                _ => panic!("Not able to serialize users")
-            };
-            for (id, user) in &session.users {
-                // TODO continue if skip_id == user key
-                user.addr.do_send(Message(message_string.to_owned()));
-            }
+    fn emit_game_type(&mut self, room_name: &String) {
+        let session = self.sessions.get(room_name).unwrap();
+        let game_type = session.game_type.as_ref().unwrap();
+        let message = GameTypeMessage {
+            eventType: "setGameType".to_string(),
+            gameType: game_type.to_string(),
+        };
+        let message_string = match serde_json::to_string(&message) {
+            JSON_Result::Ok(u) => u,
+            _ => panic!("Not able to serialize users")
+        };
+        for (id, user) in &session.users {
+            // TODO continue if skip_id == user key
+            user.addr.do_send(Message(message_string.to_owned()));
         }
     }
 
-        fn emit_game_update(&mut self, room_name: String, game: Game) {
-        if let Some(session) = self.sessions.get_mut(&room_name) {
-            let message = GameUpdateMessage {
-                eventType: "updateGame".to_string(),
-                gameState: game,
-            };
-            let message_string = match serde_json::to_string(&message) {
-                JSON_Result::Ok(u) => u,
-                _ => panic!("Not able to serialize users")
-            };
-            for (id, user) in &session.users {
-                // TODO continue if skip_id == user key
-                user.addr.do_send(Message(message_string.to_owned()));
-            }
+    fn emit_game_update(&mut self, room_name: &String) {
+        let session = self.sessions.get(room_name).unwrap();
+        let game_state = session.game_state.as_ref().unwrap();
+
+        let message = GameUpdateMessage {
+            eventType: "updateGame".to_string(),
+            gameState: game_state.clone(),
+        };
+        let message_string = match serde_json::to_string(&message) {
+            JSON_Result::Ok(u) => u,
+            _ => panic!("Not able to serialize users")
+        };
+        for (id, user) in &session.users {
+            // TODO continue if skip_id == user key
+            user.addr.do_send(Message(message_string.to_owned()));
         }
     }
 }
@@ -153,6 +154,7 @@ impl Server {
 /// Join room, if room does not exists create new one.
 #[derive(Message)]
 pub struct Join {
+    pub id: usize,
     pub addr: Recipient<Message>,
     pub username: String,
     pub room_name: String,
@@ -164,7 +166,7 @@ impl Handler<Join> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Join, _: &mut Context<Self>) {
-        let Join { addr, username, room_name } = msg;
+        let Join { id, addr, username, room_name } = msg;
 
         if self.sessions.get_mut(&room_name).is_none() {
             self.sessions.insert(
@@ -177,17 +179,15 @@ impl Handler<Join> for Server {
             );
         }
 
-        // create random id for user
-        let id = self.rng.gen::<usize>();
         self.sessions.get_mut(&room_name).unwrap().users.insert(
             id,
             User {
                 addr: addr,
                 name: username,
-                score: 0,
+                points: 0,
             }
         );
-        self.emit_users(room_name, id);
+        self.emit_users(&room_name, id);
     }
 }
 
@@ -210,7 +210,7 @@ impl Handler<SetGameType> for Server {
         }
 
         self.sessions.get_mut(&room_name).unwrap().game_type = Some(game_type.clone());
-        self.emit_game_type(room_name, game_type);
+        self.emit_game_type(&room_name);
     }
 }
 
@@ -240,8 +240,88 @@ impl Handler<StartGame> for Server {
             numberOfSets: update_board.sets,
             previousSelection: None
         };
+        self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state);
+
+        self.emit_game_update(&room_name);
+    }
+}
+
+
+#[derive(Message)]
+pub struct VerifySet {
+    pub id: usize,
+    pub room_name: String,
+    pub selected: String,
+}
+
+// Set game type, and broadcast that type to all clients in the room
+impl Handler<VerifySet> for Server {
+    type Result = ();
+
+    fn handle(&mut self, msg: VerifySet, _: &mut Context<Self>) {
+        let VerifySet { id, room_name, selected } = msg;
         
-        self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state.clone());
-        self.emit_game_update(room_name, game_state);
+        if self.sessions.get_mut(&room_name).is_none() {
+            return
+        }
+        
+        let set = Set::new(4, 3);
+        let is_valid_set = set.is_set(selected.clone());
+        if is_valid_set {
+            {
+                let user = self.sessions.get_mut(&room_name).unwrap()
+                            .users.get_mut(&id).unwrap();
+                user.points = user.points + 1;
+            }
+
+            self.emit_users(&room_name, id);
+
+            let name = self.sessions.get(&room_name).unwrap().users.get(&id).unwrap().name.to_string();
+
+            let old_board = self.sessions.get(&room_name).unwrap().game_state.as_ref().unwrap().board.to_string();
+            let deck  = self.sessions.get(&room_name).unwrap().game_state.as_ref().unwrap().deck.to_string();
+
+            let mut board: Vec<&str> = old_board.split(",").collect();
+            for card in selected.split(",") {
+                board.remove_item(&card);
+            }
+
+            let set = Set::new(4, 3);
+            let update_board = set.update_board(deck, board.join(","));
+            let game_state = Game {
+                deck: update_board.get_deck(),
+                board: update_board.get_board(),
+                numberOfSets: update_board.sets,
+                previousSelection: Some(Selection{
+                    user: name,
+                    valid: true,
+                    selection: selected.to_string(),
+                }),
+            };
+
+            self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state);
+
+            self.emit_game_update(&room_name);
+        } else {
+            {
+                let user = self.sessions.get_mut(&room_name).unwrap()
+                            .users.get_mut(&id).unwrap();
+                user.points = user.points - 1;
+            }
+
+            self.emit_users(&room_name, id);
+
+            let name = self.sessions.get(&room_name).unwrap().users.get(&id).unwrap().name.to_string();
+
+            let previousSelection = Some(Selection{
+                user: name,
+                valid: false,
+                selection: selected,
+            });
+
+            self.sessions.get_mut(&room_name).unwrap().game_state.as_mut().unwrap().previousSelection = previousSelection;
+
+            self.emit_game_update(&room_name);
+        }
     }
 }

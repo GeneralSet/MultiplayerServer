@@ -1,4 +1,5 @@
 #![feature(type_alias_enum_variants)]
+#![feature(vec_remove_item)]
 #[macro_use] extern crate log;
 extern crate env_logger;
 extern crate actix;
@@ -10,7 +11,7 @@ extern crate rand;
 
 use std::time::{Instant, Duration};
 use std::collections::HashMap;
-
+use rand::prelude::*;
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
 use log::Level;
@@ -37,15 +38,31 @@ fn chat_route(req: &HttpRequest<WsSessionState>) -> Result<HttpResponse, Error> 
     ws::start(
         req,
         WsSession {
+            id: 0
         },
     )
 }
 
 struct WsSession {
+    /// unique session id
+    id: usize,
 }
 
 impl Actor for WsSession {
     type Context = ws::WebsocketContext<Self, WsSessionState>;
+
+    /// Method is called on actor start.
+    /// We register ws session with Server
+    fn started(&mut self, ctx: &mut Self::Context) {
+        // we'll start heartbeat process on session start.
+        // self.hb(ctx);
+
+        // create random id for session
+        let mut rng = rand::thread_rng();
+        self.id = rng.gen();
+
+    }
+
 }
 
 #[derive(Serialize, Deserialize)]
@@ -54,16 +71,18 @@ struct Event<'a> {
     username: Option<&'a str>,
     roomName: Option<&'a str>,
     gameType: Option<&'a str>,
+    selected: Option<&'a str>,
 }
 
 
-fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event: Event) {
+fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, id: usize, event: Event) {
     match event.eventType {
         "joinRoom" => {
             error!("joinRoom Event!");
             let addr = ctx.address();
             ctx.state().addr.do_send(server::Join {
                 addr: addr.recipient(),
+                id: id,
                 username: match event.username {
                     Some(u) => u,
                     None => "",
@@ -73,7 +92,6 @@ fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event
                     None => "",
                 }.to_string(),
             });
-            ctx.text("joined");
         },
         "setGameType" => {
             error!("setGameType Event!");
@@ -87,7 +105,6 @@ fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event
                     None => "",
                 }.to_string(),
             });
-            ctx.text("joined");
         },
         "startGame" => {
             error!("startGame Event!");
@@ -97,11 +114,25 @@ fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event
                     None => "",
                 }.to_string(),
             });
-            ctx.text("joined");
+        },
+        "verifySet" => {
+            error!("VerifySet Event!");
+            ctx.state().addr.do_send(server::VerifySet {
+                id: id,
+                room_name: match event.roomName {
+                    Some(u) => u,
+                    None => "",
+                }.to_string(),
+                selected: match event.selected {
+                    Some(s) => s,
+                    None => "",
+                }.to_string(),
+            });
         },
         _ => {
             error!("No handler for event type: {}", event.eventType);
         }
+
     };
 }
 
@@ -133,10 +164,11 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsSession {
                             username: None,
                             roomName: None,
                             gameType: None,
+                            selected: None,
                         }
                     }
                 };
-                event_router(ctx, event);
+                event_router(ctx, self.id, event);
             },
             ws::Message::Close(_) => {
                 ctx.stop();
