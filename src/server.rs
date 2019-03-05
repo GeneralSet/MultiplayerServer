@@ -30,18 +30,26 @@ pub struct GameTypeMessage {
     gameType: String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct GameUpdateMessage {
+    eventType: String,
+    gameState: Game,
+}
+
 pub struct User {
     addr: Recipient<Message>,
     name: String,
     score: isize,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Selection {
     user: String,
     valid: bool,
     selection: Vec<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Game {
     number_of_sets: usize,
     deck: String,
@@ -106,11 +114,29 @@ impl Server {
             }
         }
     }
+
     fn emit_game_type(&mut self, room_name: String, game_type: String) {
         if let Some(session) = self.sessions.get_mut(&room_name) {
             let message = GameTypeMessage {
                 eventType: "setGameType".to_string(),
                 gameType: game_type,
+            };
+            let message_string = match serde_json::to_string(&message) {
+                JSON_Result::Ok(u) => u,
+                _ => panic!("Not able to serialize users")
+            };
+            for (id, user) in &session.users {
+                // TODO continue if skip_id == user key
+                user.addr.do_send(Message(message_string.to_owned()));
+            }
+        }
+    }
+
+        fn emit_game_update(&mut self, room_name: String, game: Game) {
+        if let Some(session) = self.sessions.get_mut(&room_name) {
+            let message = GameUpdateMessage {
+                eventType: "updateGame".to_string(),
+                gameState: game,
             };
             let message_string = match serde_json::to_string(&message) {
                 JSON_Result::Ok(u) => u,
@@ -215,7 +241,7 @@ impl Handler<StartGame> for Server {
             previous_selection: None
         };
         
-        self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state);
-        // TODO emit game update event
+        self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state.clone());
+        self.emit_game_update(room_name, game_state);
     }
 }
