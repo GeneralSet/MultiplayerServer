@@ -5,6 +5,8 @@ extern crate actix;
 extern crate actix_web;
 extern crate serde;
 extern crate serde_json;
+extern crate set;
+extern crate rand;
 
 use std::time::{Instant, Duration};
 use std::collections::HashMap;
@@ -80,6 +82,16 @@ fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event
                     Some(u) => u,
                     None => "",
                 }.to_string(),
+                room_name: match event.roomName {
+                    Some(u) => u,
+                    None => "",
+                }.to_string(),
+            });
+            ctx.text("joined");
+        },
+        "startGame" => {
+            error!("startGame Event!");
+            ctx.state().addr.do_send(server::StartGame {
                 room_name: match event.roomName {
                     Some(u) => u,
                     None => "",

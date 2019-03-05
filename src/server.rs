@@ -6,6 +6,8 @@ use rand::{self, rngs::ThreadRng, Rng};
 use std::collections::{HashMap, HashSet};
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
+use set::Set;
+
 /// Server sends this messages to session
 #[derive(Message)]
 pub struct Message(pub String);
@@ -42,8 +44,8 @@ pub struct Selection {
 
 pub struct Game {
     number_of_sets: usize,
-    deck: Option<String>,
-    board: Option<String>,
+    deck: String,
+    board: String,
     previous_selection: Option<Selection>
 }
 
@@ -183,5 +185,37 @@ impl Handler<SetGameType> for Server {
 
         self.sessions.get_mut(&room_name).unwrap().game_type = Some(game_type.clone());
         self.emit_game_type(room_name, game_type);
+    }
+}
+
+
+#[derive(Message)]
+pub struct StartGame {
+    pub room_name: String,
+}
+
+// Set game type, and broadcast that type to all clients in the room
+impl Handler<StartGame> for Server {
+    type Result = ();
+
+    fn handle(&mut self, msg: StartGame, _: &mut Context<Self>) {
+        let StartGame { room_name } = msg;
+
+        if self.sessions.get_mut(&room_name).is_none() {
+            return
+        }
+
+        let set = Set::new(4, 3);
+        let deck = set.init_deck();
+        let update_board = set.update_board(deck, "".to_string());
+        let game_state = Game {
+            deck: update_board.get_deck(),
+            board: update_board.get_board(),
+            number_of_sets: update_board.sets,
+            previous_selection: None
+        };
+        
+        self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state);
+        // TODO emit game update event
     }
 }
