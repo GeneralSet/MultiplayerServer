@@ -35,20 +35,15 @@ fn chat_route(req: &HttpRequest<WsSessionState>) -> Result<HttpResponse, Error> 
     ws::start(
         req,
         WsSession {
-            id: 0,
         },
     )
 }
 
 struct WsSession {
-    /// unique session id
-    id: usize,
-
 }
 
 impl Actor for WsSession {
     type Context = ws::WebsocketContext<Self, WsSessionState>;
-
 }
 
 #[derive(Serialize, Deserialize)]
@@ -59,13 +54,12 @@ struct Event<'a> {
 }
 
 
-fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, id: usize, event: Event) {
+fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event: Event) {
     match event.eventType {
         "joinRoom" => {
             error!("joinRoom Event!");
             let addr = ctx.address();
             ctx.state().addr.do_send(server::Join {
-                id: id,
                 addr: addr.recipient(),
                 username: match event.username {
                     Some(u) => u,
@@ -114,7 +108,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsSession {
                         }
                     }
                 };
-                event_router(ctx, self.id, event);
+                event_router(ctx, event);
             },
             ws::Message::Close(_) => {
                 ctx.stop();
@@ -129,7 +123,7 @@ fn main() {
 
     let sys = actix::System::new("multiplayer-server");
 
-    // Start chat server actor in separate thread
+    // Start server actor in separate thread
     let server = Arbiter::start(|_| server::Server::default());
     
     // Create Http server with websocket support

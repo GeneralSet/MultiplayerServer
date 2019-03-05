@@ -105,7 +105,6 @@ impl Server {
 /// Join room, if room does not exists create new one.
 #[derive(Message)]
 pub struct Join {
-    pub id: usize,
     pub addr: Recipient<Message>,
     pub username: String,
     pub room_name: String,
@@ -117,7 +116,7 @@ impl Handler<Join> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Join, _: &mut Context<Self>) {
-        let Join { id, addr, username, room_name } = msg;
+        let Join { addr, username, room_name } = msg;
 
         if self.sessions.get_mut(&room_name).is_none() {
             self.sessions.insert(
@@ -129,6 +128,9 @@ impl Handler<Join> for Server {
                 }
             );
         }
+
+        // create random id for user
+        let id = self.rng.gen::<usize>();
         self.sessions.get_mut(&room_name).unwrap().users.insert(
             id,
             User {
