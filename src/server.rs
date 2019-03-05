@@ -4,8 +4,26 @@
 use actix::prelude::*;
 use rand::{self, rngs::ThreadRng, Rng};
 use std::collections::{HashMap, HashSet};
+use serde_json::{Result as JSON_Result};
+use serde::{Deserialize, Serialize};
+/// Server sends this messages to session
+#[derive(Message)]
+pub struct Message(pub String);
+
+#[derive(Serialize, Deserialize)]
+pub struct ClientUser {
+    name: String,
+    score: isize,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UserMessage {
+    eventType: String,
+    users: Vec<ClientUser>
+}
 
 pub struct User {
+    addr: Recipient<Message>,
     name: String,
     score: isize,
 }
@@ -54,13 +72,29 @@ impl Actor for Server {
 
 
 impl Server {
-    fn emit_users(&self, room_name: String, skip_id: usize) {
+    fn emit_users(&mut self, room_name: String, skip_id: usize) {
         if let Some(session) = self.sessions.get_mut(&room_name) {
-            // loop through session.users
-                // continue if skip_id == user key
-                // addr.do_send(Vector of users);
-            for user in session.users {
-                // skip if ha
+
+            let mut message = UserMessage {
+                eventType: "users".to_string(),
+                users: Vec::new(),
+            };
+            for user in session.users.values() {
+                message.users.push(
+                    ClientUser {
+                        name: user.name.clone(),
+                        score: user.score.clone(),
+                    }
+                )
+            }
+            let message_string = match serde_json::to_string(&message) {
+                JSON_Result::Ok(u) => u,
+                _ => panic!("Not able to serialize users")
+            };
+
+            for (id, user) in &session.users {
+                // TODO continue if skip_id == user key
+                user.addr.do_send(Message(message_string.to_owned()));
             }
         }
     }
@@ -72,6 +106,7 @@ impl Server {
 #[derive(Message)]
 pub struct Join {
     pub id: usize,
+    pub addr: Recipient<Message>,
     pub username: String,
     pub room_name: String,
 }
@@ -82,7 +117,7 @@ impl Handler<Join> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Join, _: &mut Context<Self>) {
-        let Join { id, username, room_name } = msg;
+        let Join { id, addr, username, room_name } = msg;
 
         if self.sessions.get_mut(&room_name).is_none() {
             self.sessions.insert(
@@ -97,6 +132,7 @@ impl Handler<Join> for Server {
         self.sessions.get_mut(&room_name).unwrap().users.insert(
             id,
             User {
+                addr: addr,
                 name: username,
                 score: 0,
             }

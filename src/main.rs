@@ -1,3 +1,4 @@
+#![feature(type_alias_enum_variants)]
 #[macro_use] extern crate log;
 extern crate env_logger;
 extern crate actix;
@@ -8,7 +9,7 @@ extern crate serde_json;
 use std::time::{Instant, Duration};
 use std::collections::HashMap;
 
-use serde_json::Result as JSON_Result;
+use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
 use log::Level;
 use actix::*;
@@ -46,30 +47,52 @@ struct WsSession {
 }
 
 impl Actor for WsSession {
-    type Context = ws::WebsocketContext<Self>;
+    type Context = ws::WebsocketContext<Self, WsSessionState>;
 
 }
 
 #[derive(Serialize, Deserialize)]
-struct Event {
-    eventType: String,
-    username: Option<String>,
-    roomName: Option<String>,
+struct Event<'a> {
+    eventType: &'a str,
+    username: Option<&'a str>,
+    roomName: Option<&'a str>,
 }
 
 
-fn event_router(data: String) -> JSON_Result<String> {
-    let event: Event = serde_json::from_str(data.as_str())?;  
-    let response = "";
+fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, id: usize, event: Event) {
+    match event.eventType {
+        "joinRoom" => {
+            error!("joinRoom Event!");
+            let addr = ctx.address();
+            ctx.state().addr.do_send(server::Join {
+                id: id,
+                addr: addr.recipient(),
+                username: match event.username {
+                    Some(u) => u,
+                    None => "",
+                }.to_string(),
+                room_name: match event.roomName {
+                    Some(u) => u,
+                    None => "",
+                }.to_string(),
+            });
+            ctx.text("joined");
+        },
+        _ => {
+            error!("No handler for event type: {}", event.eventType);
+        }
+    };
+}
 
-    if(event.eventType == "joinRoom") {
-        error!("joinRoom Event!");
-    } else {
-      error!("No route for event type: {}", event.eventType);
+/// Handle messages from chat server, we simply send it to peer websocket
+impl Handler<server::Message> for WsSession {
+    type Result = ();
+
+    fn handle(&mut self, msg: server::Message, ctx: &mut Self::Context) {
+        ctx.text(msg.0);
     }
-    
-    Ok(response.to_string())
 }
+
 
 /// Handler for ws::Message message
 impl StreamHandler<ws::Message, ws::ProtocolError> for WsSession {
@@ -77,12 +100,22 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsSession {
     fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
         error!("handle");
         match msg {
-            ws::Message::Text(text) => ctx.text(
-                match event_router(text) {
-                    Ok(s) => s,
-                    _ => "Invalid event".to_string()
-                }
-            ),
+            ws::Message::Text(text) => {
+                error!("msg recived {}", text);
+                let event: Event = match serde_json::from_str(text.as_str()) {
+                    JSON_Result::Ok(event) => {
+                        event
+                    },
+                    _ => {
+                        Event {
+                            eventType: "Invalid data format",
+                            username: None,
+                            roomName: None,
+                        }
+                    }
+                };
+                event_router(ctx, self.id, event);
+            },
             ws::Message::Close(_) => {
                 ctx.stop();
             },  
@@ -93,7 +126,8 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsSession {
 
 fn main() {
     env_logger::init();
-    info!("init");
+
+    let sys = actix::System::new("multiplayer-server");
 
     // Start chat server actor in separate thread
     let server = Arbiter::start(|_| server::Server::default());
@@ -112,7 +146,6 @@ fn main() {
     }).bind("127.0.0.1:3001")
     .unwrap()
     .start();
-      
-    info!("Started http server: 127.0.0.1:3001");
 
+    let _ = sys.run();
 }
