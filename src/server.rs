@@ -51,10 +51,10 @@ pub struct Selection {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Game {
-    number_of_sets: usize,
+    numberOfSets: usize,
     deck: String,
     board: String,
-    previous_selection: Option<Selection>
+    previousSelection: Option<Selection>
 }
 
 pub struct Lobby {
@@ -237,8 +237,8 @@ impl Handler<StartGame> for Server {
         let game_state = Game {
             deck: update_board.get_deck(),
             board: update_board.get_board(),
-            number_of_sets: update_board.sets,
-            previous_selection: None
+            numberOfSets: update_board.sets,
+            previousSelection: None
         };
         
         self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state.clone());
