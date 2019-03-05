@@ -51,6 +51,7 @@ struct Event<'a> {
     eventType: &'a str,
     username: Option<&'a str>,
     roomName: Option<&'a str>,
+    gameType: Option<&'a str>,
 }
 
 
@@ -62,6 +63,20 @@ fn event_router(ctx: &mut ws::WebsocketContext<WsSession, WsSessionState>, event
             ctx.state().addr.do_send(server::Join {
                 addr: addr.recipient(),
                 username: match event.username {
+                    Some(u) => u,
+                    None => "",
+                }.to_string(),
+                room_name: match event.roomName {
+                    Some(u) => u,
+                    None => "",
+                }.to_string(),
+            });
+            ctx.text("joined");
+        },
+        "setGameType" => {
+            error!("setGameType Event!");
+            ctx.state().addr.do_send(server::SetGameType {
+                game_type: match event.gameType {
                     Some(u) => u,
                     None => "",
                 }.to_string(),
@@ -105,6 +120,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsSession {
                             eventType: "Invalid data format",
                             username: None,
                             roomName: None,
+                            gameType: None,
                         }
                     }
                 };

@@ -22,6 +22,12 @@ pub struct UserMessage {
     users: Vec<ClientUser>
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct GameTypeMessage {
+    eventType: String,
+    gameType: String,
+}
+
 pub struct User {
     addr: Recipient<Message>,
     name: String,
@@ -98,7 +104,21 @@ impl Server {
             }
         }
     }
-    fn emit_gamestate(&self, room_name: String, skip_id: usize) {
+    fn emit_game_type(&mut self, room_name: String, game_type: String) {
+        if let Some(session) = self.sessions.get_mut(&room_name) {
+            let message = GameTypeMessage {
+                eventType: "setGameType".to_string(),
+                gameType: game_type,
+            };
+            let message_string = match serde_json::to_string(&message) {
+                JSON_Result::Ok(u) => u,
+                _ => panic!("Not able to serialize users")
+            };
+            for (id, user) in &session.users {
+                // TODO continue if skip_id == user key
+                user.addr.do_send(Message(message_string.to_owned()));
+            }
+        }
     }
 }
 
@@ -140,5 +160,28 @@ impl Handler<Join> for Server {
             }
         );
         self.emit_users(room_name, id);
+    }
+}
+
+
+#[derive(Message)]
+pub struct SetGameType {
+    pub game_type: String,
+    pub room_name: String,
+}
+
+// Set game type, and broadcast that type to all clients in the room
+impl Handler<SetGameType> for Server {
+    type Result = ();
+
+    fn handle(&mut self, msg: SetGameType, _: &mut Context<Self>) {
+        let SetGameType { game_type, room_name } = msg;
+
+        if self.sessions.get_mut(&room_name).is_none() {
+            return
+        }
+
+        self.sessions.get_mut(&room_name).unwrap().game_type = Some(game_type.clone());
+        self.emit_game_type(room_name, game_type);
     }
 }
