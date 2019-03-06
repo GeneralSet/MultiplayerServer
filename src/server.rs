@@ -1,9 +1,5 @@
-//! `Server` is an actor. It maintains list of connection client session.
-//! And manages game state for each room.
-
 use actix::prelude::*;
-use rand::{self, rngs::ThreadRng, Rng};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
 use set::Set;
@@ -67,14 +63,12 @@ pub struct Lobby {
 /// sessions. implementation is super primitive
 pub struct Server {
     sessions: HashMap<String, Lobby>,
-    rng: ThreadRng,
 }
 
 impl Default for Server {
     fn default() -> Server {
         Server {
             sessions: HashMap::new(),
-            rng: rand::thread_rng(),
         }
     }
 }
@@ -86,9 +80,9 @@ impl Actor for Server {
     type Context = Context<Self>;
 }
 
-
+#[allow(unused_must_use)]
 impl Server {
-    fn emit_users(&mut self, room_name: &String, skip_id: usize) {
+    fn emit_users(&mut self, room_name: &String, _skip_id: usize) {
         if let Some(session) = self.sessions.get_mut(room_name) {
 
             let mut message = UserMessage {
@@ -108,7 +102,7 @@ impl Server {
                 _ => panic!("Not able to serialize users")
             };
 
-            for (id, user) in &session.users {
+            for (_id, user) in &session.users {
                 // TODO continue if skip_id == user key
                 user.addr.do_send(Message(message_string.to_owned()));
             }
@@ -126,7 +120,7 @@ impl Server {
             JSON_Result::Ok(u) => u,
             _ => panic!("Not able to serialize users")
         };
-        for (id, user) in &session.users {
+        for (_id, user) in &session.users {
             // TODO continue if skip_id == user key
             user.addr.do_send(Message(message_string.to_owned()));
         }
@@ -144,7 +138,7 @@ impl Server {
             JSON_Result::Ok(u) => u,
             _ => panic!("Not able to serialize users")
         };
-        for (id, user) in &session.users {
+        for (_id, user) in &session.users {
             // TODO continue if skip_id == user key
             user.addr.do_send(Message(message_string.to_owned()));
         }

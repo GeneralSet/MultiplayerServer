@@ -1,6 +1,8 @@
 #![feature(type_alias_enum_variants)]
 #![feature(vec_remove_item)]
-#[macro_use] extern crate log;
+#![allow(non_snake_case)]
+#[macro_use]
+extern crate log;
 extern crate env_logger;
 extern crate actix;
 extern crate actix_web;
@@ -9,23 +11,15 @@ extern crate serde_json;
 extern crate set;
 extern crate rand;
 
-use std::time::{Instant, Duration};
-use std::collections::HashMap;
+use std::env;
 use rand::prelude::*;
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
-use log::Level;
 use actix::*;
 use actix_web::server::HttpServer;
-use actix_web::{fs, http, ws, App, Error, HttpRequest, HttpResponse};
+use actix_web::{ws, App, Error, HttpRequest, HttpResponse};
 
 mod server;
-
-/// How often heartbeat pings are sent
-const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(25);
-/// How long before lack of client response causes a timeout
-const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
-
 
 /// This is our websocket route state, this state is shared with all route
 /// instances via `HttpContext::state()`
@@ -53,7 +47,7 @@ impl Actor for WsSession {
 
     /// Method is called on actor start.
     /// We register ws session with Server
-    fn started(&mut self, ctx: &mut Self::Context) {
+    fn started(&mut self, _ctx: &mut Self::Context) {
         // we'll start heartbeat process on session start.
         // self.hb(ctx);
 
@@ -187,6 +181,15 @@ fn main() {
     let server = Arbiter::start(|_| server::Server::default());
     
     // Create Http server with websocket support
+    let env = match env::var("RUST_ENV") {
+        Result::Ok(env) => env,
+        _ => "development".to_string(),
+    };
+    let address = match env.as_str() {
+        "production" => "0.0.0.0:3001",
+        _ => "127.0.0.1:3001",
+    };
+    error!("{}", address);
     HttpServer::new(move || {
         // Websocket sessions state
         let state = WsSessionState {
@@ -197,7 +200,7 @@ fn main() {
         // websocket
         .resource("/", |r| r.route().f(chat_route))
 
-    }).bind("127.0.0.1:3001")
+    }).bind(address)
     .unwrap()
     .start();
 
