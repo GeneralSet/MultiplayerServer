@@ -186,7 +186,7 @@ fn main() {
         _ => "development".to_string(),
     };
     let address = match env.as_str() {
-        "production" => "0.0.0.0:3001",
+        "docker" => "0.0.0.0:3001",
         _ => "127.0.0.1:3001",
     };
     error!("{}", address);
