@@ -1,0 +1,57 @@
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/rust:latest
+version: 2
+jobs:
+  checkout_code:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          keys:
+            - source-{{ .Branch }}-{{ .Revision }}
+            - source-{{ .Branch }}-
+            - source-
+
+      - checkout
+
+      - save_cache:
+          key: source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - "~/repo"
+  build:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: source-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "cargo.lock" }}
+      - run:
+          name: "Compile app"
+          command: cargo build
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - target
+            - Cargo.lock
+  test:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: source-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "cargo.lock" }}
+      - run:
+          name: "Test"
+          command: cargo test
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - checkout_code
+      - build:
+          requires:
+            - checkout_code
+      - test:
+          requires:
+            - build
