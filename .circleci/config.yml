@@ -26,6 +26,7 @@ jobs:
           key: source-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: dependency-cache-{{ checksum "Cargo.lock" }}
+      - run: rustup install nightly
       - run:
           name: "Compile app"
           command: rustup run nightly cargo build
