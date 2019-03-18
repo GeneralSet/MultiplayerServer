@@ -2,6 +2,9 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: circleci/rust:latest
+  pre-steps:
+    - run: rustup install nightly
+    - run: rustup default nightly
 version: 2
 jobs:
   checkout_code:
@@ -26,7 +29,6 @@ jobs:
           key: source-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: dependency-cache-{{ checksum "Cargo.lock" }}
-      - run: rustup install nightly
       - run:
           name: "Compile app"
           command: rustup run nightly cargo build
