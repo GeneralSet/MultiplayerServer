@@ -53,7 +53,7 @@ jobs:
   publish_release:
     <<: *defaults
     environment:
-      IMAGE_NAME: multiplayer_server
+      IMAGE_NAME: generalset/multiplayer_server
     steps:
       - restore_cache:
           key: source-{{ .Branch }}-{{ .Revision }}
@@ -77,8 +77,7 @@ jobs:
           name: "Deploy to DO"
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker stop $(docker ps -a -q)
-              docker run -d -p 80:3001 -e RUST_ENV="docker" generalset/multiplayer_server:init
+              ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST 'docker stop $(docker ps -a -q) && docker run -d -p 80:3001 -e RUST_ENV="docker" generalset/multiplayer_server:init'
             fi
 workflows:
   version: 2
