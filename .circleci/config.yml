@@ -59,9 +59,7 @@ jobs:
           key: source-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: dependency-cache-{{ checksum "Cargo.lock" }}
-      - run:
-          name: "Allocate a new Docker Engine"
-          command: setup_remote_docker
+      - setup_remote_docker
       - run:
           name: "Build Docker Image"
           command:  docker build . -t $IMAGE_NAME:latest
