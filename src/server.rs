@@ -2,6 +2,7 @@ use actix::prelude::*;
 use std::collections::{HashMap};
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
+use redis::Commands;
 use set::Set;
 
 /// Server sends this messages to session
@@ -32,6 +33,7 @@ pub struct GameUpdateMessage {
     gameState: Game,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct User {
     addr: Recipient<Message>,
     name: String,
@@ -53,6 +55,7 @@ pub struct Game {
     previousSelection: Option<Selection>
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Lobby {
     users: HashMap<usize, User>,
     game_type: Option<String>,
@@ -63,12 +66,14 @@ pub struct Lobby {
 /// sessions. implementation is super primitive
 pub struct Server {
     sessions: HashMap<String, Lobby>,
+    redis: redis::Client
 }
 
 impl Default for Server {
     fn default() -> Server {
         Server {
             sessions: HashMap::new(),
+            redis:  redis::Client::open("redis://redis:6379").unwrap(),
         }
     }
 }
@@ -161,6 +166,23 @@ impl Handler<Join> for Server {
 
     fn handle(&mut self, msg: Join, _: &mut Context<Self>) {
         let Join { id, addr, username, room_name } = msg;
+
+        // let client = self.redis.clone();
+        // let con = client.get_connection().unwrap();
+
+        // let lobby = con.get(room_name.clone()).unwrap_or(None);
+        // if lobby.is_none() {
+        //     let blank_lobby = Lobby {
+        //         users: HashMap::new(),
+        //         game_type: None,
+        //         game_state: None
+        //     };
+        //     let blank_lobby_str = match serde_json::to_string(&blank_lobby) {
+        //         JSON_Result::Ok(u) => u,
+        //         _ => panic!("Unable to serialize blank lobby")
+        //     };
+        //     let _ : () = con.set(&room_name, blank_lobby_str).unwrap();
+        // }
 
         if self.sessions.get_mut(&room_name).is_none() {
             self.sessions.insert(
