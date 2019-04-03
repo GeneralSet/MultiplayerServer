@@ -12,7 +12,6 @@ extern crate redis;
 extern crate set;
 extern crate rand;
 
-use std::env;
 use rand::prelude::*;
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
