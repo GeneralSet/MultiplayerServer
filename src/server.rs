@@ -89,7 +89,7 @@ impl Actor for Server {
 
 #[allow(unused_must_use)]
 impl Server {
-    fn emit_users(&mut self, users: HashMap<usize, User>) {
+    fn emit_users(&mut self, users: &HashMap<usize, User>) {
         let mut message = UserMessage {
             eventType: "users".to_string(),
             users: Vec::new(),
@@ -132,10 +132,7 @@ impl Server {
         }
     }
 
-    fn emit_game_update(&mut self, room_name: &String) {
-        let session = self.sessions.get(room_name).unwrap();
-        let game_state = session.game_state.as_ref().unwrap();
-
+    fn emit_game_update(&mut self, game_state: &Game, users: HashMap<usize, User>) {
         let message = GameUpdateMessage {
             eventType: "updateGame".to_string(),
             gameState: game_state.clone(),
@@ -144,12 +141,13 @@ impl Server {
             JSON_Result::Ok(u) => u,
             _ => panic!("Not able to serialize users")
         };
-        for (id, _user) in &session.users {
+        for (id, _user) in users {
             // TODO continue if skip_id == user key
             match self.user_addrs.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
                 None => Ok(()) // user is not connected to this server
-            };        }
+            };
+        }
     }
 }
 
@@ -197,9 +195,8 @@ impl Handler<Join> for Server {
         );
         let lobby_json = serde_json::to_string(&new_lobby).unwrap();
         let _: () = con.set(&room_name, lobby_json).unwrap();
-
          // TODO: call emit functions from redis subscription
-        self.emit_users(new_lobby.users);
+        self.emit_users(&new_lobby.users);
     }
 }
 
@@ -219,7 +216,7 @@ impl Handler<SetGameType> for Server {
 
         // get lobby
         let con = self.redis.get_connection().unwrap();
-        let existing_lobby: redis::RedisResult<String> = con.get("room_name");
+        let existing_lobby: redis::RedisResult<String> = con.get(&room_name);
         let mut new_lobby: Lobby = match existing_lobby {
             Ok(l) => {
                 serde_json::from_str(&l).unwrap()
@@ -227,7 +224,7 @@ impl Handler<SetGameType> for Server {
             _ => panic!("requested lobby does not exist")
         };
 
-        // update lobby game type
+        // update lobby with new game type
         new_lobby.game_type = Some(game_type.clone());
         let lobby_json = serde_json::to_string(&new_lobby).unwrap();
         let _: () = con.set(&room_name, lobby_json).unwrap();
@@ -250,10 +247,17 @@ impl Handler<StartGame> for Server {
     fn handle(&mut self, msg: StartGame, _: &mut Context<Self>) {
         let StartGame { room_name } = msg;
 
-        if self.sessions.get_mut(&room_name).is_none() {
-            return
-        }
+        // get lobby
+        let con = self.redis.get_connection().unwrap();
+        let existing_lobby: redis::RedisResult<String> = con.get(&room_name);
+        let mut new_lobby: Lobby = match existing_lobby {
+            Ok(l) => {
+                serde_json::from_str(&l).unwrap()
+            },
+            _ => panic!("requested lobby does not exist")
+        };
 
+        // init game state
         let set = Set::new(4, 3);
         let deck = set.init_deck();
         let update_board = set.update_board(deck, "".to_string());
@@ -263,9 +267,14 @@ impl Handler<StartGame> for Server {
             numberOfSets: update_board.sets,
             previousSelection: None
         };
-        self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state);
 
-        self.emit_game_update(&room_name);
+
+        // update lobby with new game state
+        new_lobby.game_state = Some(game_state.clone());
+        let lobby_json = serde_json::to_string(&new_lobby).unwrap();
+        let _: () = con.set(&room_name, lobby_json).unwrap();
+        // TODO: call emit functions from redis subscription
+        self.emit_game_update(&game_state, new_lobby.users);
     }
 }
 
@@ -284,31 +293,39 @@ impl Handler<VerifySet> for Server {
     fn handle(&mut self, msg: VerifySet, _: &mut Context<Self>) {
         let VerifySet { id, room_name, selected } = msg;
         
-        if self.sessions.get_mut(&room_name).is_none() {
-            return
-        }
-        
+        // get lobby
+        let con = self.redis.get_connection().unwrap();
+        let existing_lobby: redis::RedisResult<String> = con.get(&room_name);
+        let mut new_lobby: Lobby = match existing_lobby {
+            Ok(l) => {
+                serde_json::from_str(&l).unwrap()
+            },
+            _ => panic!("requested lobby does not exist")
+        };
+
+        // check if selected cards are a set
         let set = Set::new(4, 3);
         let is_valid_set = set.is_set(selected.clone());
         if is_valid_set {
+            // add a point to the user who selected the set
             {
-                let user = self.sessions.get_mut(&room_name).unwrap()
-                            .users.get_mut(&id).unwrap();
+                let user = new_lobby.users.get_mut(&id).unwrap();
                 user.points = user.points + 1;
             }
+            self.emit_users(&new_lobby.users);
 
-            // self.emit_users(&room_name, id, self.sessions.get(&room_name).unwrap().users);
+            // get current game state
+            let name = new_lobby.users.get(&id).unwrap().name.to_string();
+            let old_board = new_lobby.game_state.as_ref().unwrap().board.to_string();
+            let deck = new_lobby.game_state.as_ref().unwrap().deck.to_string();
 
-            let name = self.sessions.get(&room_name).unwrap().users.get(&id).unwrap().name.to_string();
-
-            let old_board = self.sessions.get(&room_name).unwrap().game_state.as_ref().unwrap().board.to_string();
-            let deck  = self.sessions.get(&room_name).unwrap().game_state.as_ref().unwrap().deck.to_string();
-
+            // remove selected cards from the board
             let mut board: Vec<&str> = old_board.split(",").collect();
             for card in selected.split(",") {
                 board.remove_item(&card);
             }
 
+            // create updated game state
             let set = Set::new(4, 3);
             let update_board = set.update_board(deck, board.join(","));
             let game_state = Game {
@@ -322,29 +339,34 @@ impl Handler<VerifySet> for Server {
                 }),
             };
 
-            self.sessions.get_mut(&room_name).unwrap().game_state = Some(game_state);
-
-            self.emit_game_update(&room_name);
+            // update lobby with new game state
+            new_lobby.game_state = Some(game_state.clone());
+            let lobby_json = serde_json::to_string(&new_lobby).unwrap();
+            let _: () = con.set(&room_name, lobby_json).unwrap();
+            // TODO: call emit functions from redis subscription
+            self.emit_game_update(&game_state, new_lobby.users);
         } else {
+            // subtract a point to the user who selected the set
             {
-                let user = self.sessions.get_mut(&room_name).unwrap()
-                            .users.get_mut(&id).unwrap();
-                user.points = user.points - 1;
+                let user = new_lobby.users.get_mut(&id).unwrap();
+                user.points = user.points + 1;
             }
+            self.emit_users(&new_lobby.users);
 
-            // self.emit_users(&room_name, id, self.sessions.get(&room_name).unwrap().users);
-
-            let name = self.sessions.get(&room_name).unwrap().users.get(&id).unwrap().name.to_string();
-
+            // create previous selection
+            let name = new_lobby.users.get(&id).unwrap().name.to_string();
             let previousSelection = Some(Selection{
                 user: name,
                 valid: false,
                 selection: selected,
             });
 
-            self.sessions.get_mut(&room_name).unwrap().game_state.as_mut().unwrap().previousSelection = previousSelection;
-
-            self.emit_game_update(&room_name);
+            // update lobby with new previous selection
+            new_lobby.game_state.as_mut().unwrap().previousSelection = previousSelection;
+            let lobby_json = serde_json::to_string(&new_lobby).unwrap();
+            let _: () = con.set(&room_name, lobby_json).unwrap();
+            // TODO: call emit functions from redis subscription
+            self.emit_game_update(&new_lobby.game_state.unwrap(), new_lobby.users);
         }
     }
 }
