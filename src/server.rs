@@ -35,7 +35,6 @@ pub struct GameUpdateMessage {
 
 #[derive(Serialize, Deserialize)]
 pub struct User {
-    addr: Recipient<Message>,
     name: String,
     points: isize,
 }
@@ -66,6 +65,8 @@ pub struct Lobby {
 /// sessions. implementation is super primitive
 pub struct Server {
     sessions: HashMap<String, Lobby>,
+    // TODO: rename user_addrs to sessions
+    user_addrs: HashMap<usize, Recipient<Message>>,
     redis: redis::Client
 }
 
@@ -73,6 +74,7 @@ impl Default for Server {
     fn default() -> Server {
         Server {
             sessions: HashMap::new(),
+            user_addrs: HashMap::new(),
             redis:  redis::Client::open("redis://redis:6379").unwrap(),
         }
     }
@@ -87,30 +89,28 @@ impl Actor for Server {
 
 #[allow(unused_must_use)]
 impl Server {
-    fn emit_users(&mut self, room_name: &String, _skip_id: usize) {
-        if let Some(session) = self.sessions.get_mut(room_name) {
+    fn emit_users(&mut self, room_name: &String, _skip_id: usize, users: HashMap<usize, User>) {
+        let mut message = UserMessage {
+            eventType: "users".to_string(),
+            users: Vec::new(),
+        };
 
-            let mut message = UserMessage {
-                eventType: "users".to_string(),
-                users: Vec::new(),
-            };
-            for user in session.users.values() {
-                message.users.push(
-                    ClientUser {
-                        name: user.name.clone(),
-                        points: user.points.clone(),
-                    }
-                )
-            }
-            let message_string = match serde_json::to_string(&message) {
-                JSON_Result::Ok(u) => u,
-                _ => panic!("Not able to serialize users")
-            };
+        for user in users.values() {
+            message.users.push(
+                ClientUser {
+                    name: user.name.clone(),
+                    points: user.points.clone(),
+                }
+            )
+        }
 
-            for (_id, user) in &session.users {
-                // TODO continue if skip_id == user key
-                user.addr.do_send(Message(message_string.to_owned()));
-            }
+        let message_string = serde_json::to_string(&message).unwrap();
+        for (id, user) in users {
+            // TODO continue if skip_id == user key
+            match self.user_addrs.get(&id) {
+                Some(addr) => addr.do_send(Message(message_string.to_owned())),
+                None => Ok(()) // user is not connected to this server
+            };
         }
     }
 
@@ -127,7 +127,7 @@ impl Server {
         };
         for (_id, user) in &session.users {
             // TODO continue if skip_id == user key
-            user.addr.do_send(Message(message_string.to_owned()));
+            // user.addr.do_send(Message(message_string.to_owned()));
         }
     }
 
@@ -145,7 +145,7 @@ impl Server {
         };
         for (_id, user) in &session.users {
             // TODO continue if skip_id == user key
-            user.addr.do_send(Message(message_string.to_owned()));
+            // user.addr.do_send(Message(message_string.to_owned()));
         }
     }
 }
@@ -166,44 +166,35 @@ impl Handler<Join> for Server {
 
     fn handle(&mut self, msg: Join, _: &mut Context<Self>) {
         let Join { id, addr, username, room_name } = msg;
+  
+        // add refrence to user addr to server session
+        self.user_addrs.insert(id, addr);
 
-        // let client = self.redis.clone();
-        // let con = client.get_connection().unwrap();
+        // get/create lobby
+        let con = self.redis.get_connection().unwrap();
+        let existing_lobby: redis::RedisResult<String> = con.get("room_name");
+        let mut new_lobby: Lobby = match existing_lobby {
+            Ok(l) => {
+                serde_json::from_str(&l).unwrap()
+            },
+            _ => Lobby {
+                users: HashMap::new(),
+                game_type: None,
+                game_state: None
+            }
+        };
 
-        // let lobby = con.get(room_name.clone()).unwrap_or(None);
-        // if lobby.is_none() {
-        //     let blank_lobby = Lobby {
-        //         users: HashMap::new(),
-        //         game_type: None,
-        //         game_state: None
-        //     };
-        //     let blank_lobby_str = match serde_json::to_string(&blank_lobby) {
-        //         JSON_Result::Ok(u) => u,
-        //         _ => panic!("Unable to serialize blank lobby")
-        //     };
-        //     let _ : () = con.set(&room_name, blank_lobby_str).unwrap();
-        // }
-
-        if self.sessions.get_mut(&room_name).is_none() {
-            self.sessions.insert(
-                room_name.clone(),
-                Lobby {
-                    users: HashMap::new(),
-                    game_type: None,
-                    game_state: None,
-                }
-            );
-        }
-
-        self.sessions.get_mut(&room_name).unwrap().users.insert(
+        // add new user to lobby
+        new_lobby.users.insert(
             id,
             User {
-                addr: addr,
                 name: username,
-                points: 0,
+                points: 0
             }
         );
-        self.emit_users(&room_name, id);
+
+         // TODO: call emits from redis subscription
+        self.emit_users(&room_name, id, new_lobby.users);
     }
 }
 
@@ -290,7 +281,7 @@ impl Handler<VerifySet> for Server {
                 user.points = user.points + 1;
             }
 
-            self.emit_users(&room_name, id);
+            // self.emit_users(&room_name, id, self.sessions.get(&room_name).unwrap().users);
 
             let name = self.sessions.get(&room_name).unwrap().users.get(&id).unwrap().name.to_string();
 
@@ -325,7 +316,7 @@ impl Handler<VerifySet> for Server {
                 user.points = user.points - 1;
             }
 
-            self.emit_users(&room_name, id);
+            // self.emit_users(&room_name, id, self.sessions.get(&room_name).unwrap().users);
 
             let name = self.sessions.get(&room_name).unwrap().users.get(&id).unwrap().name.to_string();
 
