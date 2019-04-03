@@ -64,9 +64,7 @@ pub struct Lobby {
 /// `Server` manages rooms and responsible for coordinating game
 /// sessions. implementation is super primitive
 pub struct Server {
-    sessions: HashMap<String, Lobby>,
-    // TODO: rename user_addrs to sessions
-    user_addrs: HashMap<usize, Recipient<Message>>,
+    sessions: HashMap<usize, Recipient<Message>>,
     redis: redis::Client
 }
 
@@ -74,7 +72,6 @@ impl Default for Server {
     fn default() -> Server {
         Server {
             sessions: HashMap::new(),
-            user_addrs: HashMap::new(),
             redis:  redis::Client::open("redis://redis:6379").unwrap(),
         }
     }
@@ -107,7 +104,7 @@ impl Server {
         let message_string = serde_json::to_string(&message).unwrap();
         for (id, _user) in users {
             // TODO continue if skip_id == user key
-            match self.user_addrs.get(&id) {
+            match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
                 None => Ok(()) // user is not connected to this server
             };
@@ -125,7 +122,7 @@ impl Server {
         };
         for (id, _user) in users {
             // TODO continue if skip_id == user key
-            match self.user_addrs.get(&id) {
+            match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
                 None => Ok(()) // user is not connected to this server
             };
@@ -143,7 +140,7 @@ impl Server {
         };
         for (id, _user) in users {
             // TODO continue if skip_id == user key
-            match self.user_addrs.get(&id) {
+            match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
                 None => Ok(()) // user is not connected to this server
             };
@@ -169,7 +166,7 @@ impl Handler<Join> for Server {
         let Join { id, addr, username, room_name } = msg;
   
         // add refrence to user addr to server session
-        self.user_addrs.insert(id, addr);
+        self.sessions.insert(id, addr);
 
         // get/create lobby
         let con = self.redis.get_connection().unwrap();
