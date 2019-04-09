@@ -89,14 +89,14 @@ impl Actor for Server {
 #[allow(unused_must_use)]
 impl Server {
     fn subscribe(
-        client: redis::Client,
-        sessions: &HashMap<usize, Recipient<Message>>,
-        channel: String
-        ) -> thread::JoinHandle<()> {
+        &mut self,
+        channel: String,
+        addr: Addr<Server>
+    ) -> () {
+        let client = self.redis.clone();
 
         thread::spawn(move || {
             let mut conn = client.get_connection().unwrap();
-
             conn.subscribe(&[channel], |msg| {
                 let ch = msg.get_channel_name();
                 let payload: String = msg.get_payload().unwrap();
@@ -104,7 +104,10 @@ impl Server {
                     "exit" => ControlFlow::Break(()),
                     "user" => {
                         error!("emit user update here");
-                        emit_users()
+                        addr.do_send(EmitUsers {
+                            room_name: ch.to_string(),
+                        });
+                        // emit_users();
                         ControlFlow::Continue
                     },
                     a => {
@@ -113,19 +116,16 @@ impl Server {
                     }
                 }
             }).unwrap();
-        })
+        });
     }
 
-    fn emit_users(&mut self, room_name: &String) {
-        let con = self.redis.get_connection().unwrap();
-        let lobby: Lobby = con.get(&room_name).unwrap();
-
+    fn emit_users(&mut self, users: &HashMap<usize, User>) {
         let mut message = UserMessage {
             eventType: "users".to_string(),
             users: Vec::new(),
         };
 
-        for user in lobby.users.values() {
+        for user in users.values() {
             message.users.push(
                 ClientUser {
                     name: user.name.clone(),
@@ -136,12 +136,41 @@ impl Server {
 
         let message_string = serde_json::to_string(&message).unwrap();
         for (id, _user) in users {
+            // TODO continue if skip_id == user key
             match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
                 None => Ok(()) // user is not connected to this server
             };
         }
     }
+
+
+    // fn emit_users(&mut self, room_name: &String) {
+    //     let con = self.redis.get_connection().unwrap();
+    //     let lobby: Lobby = con.get(&room_name).unwrap();
+
+    //     let mut message = UserMessage {
+    //         eventType: "users".to_string(),
+    //         users: Vec::new(),
+    //     };
+
+    //     for user in lobby.users.values() {
+    //         message.users.push(
+    //             ClientUser {
+    //                 name: user.name.clone(),
+    //                 points: user.points.clone(),
+    //             }
+    //         )
+    //     }
+
+    //     let message_string = serde_json::to_string(&message).unwrap();
+    //     for (id, _user) in users {
+    //         match self.sessions.get(&id) {
+    //             Some(addr) => addr.do_send(Message(message_string.to_owned())),
+    //             None => Ok(()) // user is not connected to this server
+    //         };
+    //     }
+    // }
 
     fn emit_game_type(&mut self, game_type: &String, users: HashMap<usize, User>) {
         let message = GameTypeMessage {
@@ -185,15 +214,33 @@ impl Server {
     // }
 }
 
-fn publish(client: redis::Client, channel: String) {
-    thread::spawn(move || {
-        let conn = client.get_connection().unwrap();
+//     fn subscribe(
+//         client: redis::Client,
+//         channel: String
+//         ) -> () {
 
-        thread::sleep(Duration::from_millis(500));
-        error!("Publish {}.", 10);
-        let _: () = conn.publish(channel, 10).unwrap();
-    });
-}
+//         let mut conn = client.get_connection().unwrap();
+
+//         let _: () = conn.subscribe(&[channel], |msg| {
+//             let ch = msg.get_channel_name();
+//             let payload: String = msg.get_payload().unwrap();
+//             match payload.as_ref() {
+//                 "exit" => ControlFlow::Break(()),
+//                 a => {
+//                     error!("Channel '{}' received '{}'.", ch, a);
+//                     ControlFlow::Continue
+//                 }
+//             }
+//         }).unwrap();
+//     }
+
+// fn publish(client: redis::Client, channel: String) {
+//     let conn = client.get_connection().unwrap();
+
+//     thread::sleep(Duration::from_millis(500));
+//     error!("Publish {}.", 10);
+//     let _: () = conn.publish(channel, 10).unwrap();
+// }
 
 /// Join room, if room does not exists create new one.
 #[derive(Message)]
@@ -209,7 +256,7 @@ pub struct Join {
 impl Handler<Join> for Server {
     type Result = ();
 
-    fn handle(&mut self, msg: Join, _: &mut Context<Self>) {
+    fn handle(&mut self, msg: Join, ctx: &mut Context<Self>) {
         let Join { id, addr, username, room_name } = msg;
   
         // add refrence to user addr to server session
@@ -242,9 +289,10 @@ impl Handler<Join> for Server {
         // self.emit_users(&new_lobby.users);
    
         // subscribe to redis channel
-        let handle = subscribe(self.redis.clone(), &self.sessions, room_name.clone());
-        publish(self.redis.clone(), room_name.clone());
-        handle.join().unwrap();
+        let handle = self.subscribe(room_name.clone(), ctx.address());
+        thread::sleep(Duration::from_millis(500));
+        error!("Publish user.");
+        let _: () = con.publish(room_name.clone(), "user").unwrap();
     }
 }
 
@@ -415,6 +463,46 @@ impl Handler<VerifySet> for Server {
             let _: () = con.set(&room_name, lobby_json).unwrap();
             // TODO: call emit functions from redis subscription
             self.emit_game_update(&new_lobby.game_state.unwrap(), new_lobby.users);
+        }
+    }
+}
+
+/// EmitUsers room, if room does not exists create new one.
+#[derive(Message)]
+pub struct EmitUsers {
+    room_name: String,
+}
+
+impl Handler<EmitUsers> for Server {
+    type Result = ();
+
+    fn handle(&mut self, msg: EmitUsers, _: &mut Context<Self>) {
+        let EmitUsers { room_name } = msg;
+  
+        let con = self.redis.get_connection().unwrap();
+        let l: String = con.get(&room_name).unwrap();
+        let lobby: Lobby = serde_json::from_str(&l).unwrap();
+
+        let mut message = UserMessage {
+            eventType: "users".to_string(),
+            users: Vec::new(),
+        };
+
+        for user in lobby.users.values() {
+            message.users.push(
+                ClientUser {
+                    name: user.name.clone(),
+                    points: user.points.clone(),
+                }
+            )
+        }
+
+        let message_string = serde_json::to_string(&message).unwrap();
+        for (id, _user) in lobby.users {
+            match self.sessions.get(&id) {
+                Some(addr) => addr.do_send(Message(message_string.to_owned())),
+                None => Ok(()) // user is not connected to this server
+            };
         }
     }
 }
