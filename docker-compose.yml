@@ -3,6 +3,7 @@ services:
   actix:
     environment:
       - RUST_ENV=docker
+      - RUST_LOG=debug
     build: .
     ports: 
       - '3001:3001'
