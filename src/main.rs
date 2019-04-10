@@ -8,10 +8,10 @@ extern crate actix;
 extern crate actix_web;
 extern crate serde;
 extern crate serde_json;
+extern crate redis;
 extern crate set;
 extern crate rand;
 
-use std::env;
 use rand::prelude::*;
 use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
@@ -177,30 +177,19 @@ fn main() {
 
     let sys = actix::System::new("multiplayer-server");
 
-    // Start server actor in separate thread
-    let server = Arbiter::start(|_| server::Server::default());
-    
     // Create Http server with websocket support
-    let env = match env::var("RUST_ENV") {
-        Result::Ok(env) => env,
-        _ => "development".to_string(),
-    };
-    let address = match env.as_str() {
-        "docker" => "0.0.0.0:3001",
-        _ => "127.0.0.1:3001",
-    };
-    error!("{}", address);
     HttpServer::new(move || {
+        // Start server actor in separate thread
+        let addr = Arbiter::start(|_| server::Server::default());
+
         // Websocket sessions state
-        let state = WsSessionState {
-            addr: server.clone(),
-        };
+        let state = WsSessionState { addr };
 
         App::with_state(state)
         // websocket
         .resource("/", |r| r.route().f(chat_route))
 
-    }).bind(address)
+    }).bind("0.0.0.0:3001")
     .unwrap()
     .start();
 
