@@ -1,11 +1,9 @@
 use actix::prelude::*;
 use std::collections::{HashMap};
-use serde_json::{Result as JSON_Result};
 use serde::{Deserialize, Serialize};
 use redis::{PubSubCommands, Commands, ControlFlow};
 use set::Set;
 use std::thread;
-use std::time::Duration;
 
 /// Server sends this messages to session
 #[derive(Message)]
@@ -97,7 +95,7 @@ impl Server {
 
         thread::spawn(move || {
             let mut conn = client.get_connection().unwrap();
-            conn.subscribe(&[channel], |msg| {
+            let _: () = conn.subscribe(&[channel.clone()], |msg| {
                 let ch = msg.get_channel_name();
                 let payload: String = msg.get_payload().unwrap();
                 match payload.as_ref() {
@@ -147,8 +145,10 @@ impl Handler<Join> for Server {
     fn handle(&mut self, msg: Join, ctx: &mut Context<Self>) {
         let Join { id, addr, username, room_name } = msg;
 
+        // add user to redis channel
+        self.subscribe(room_name.clone(), ctx.address());
         // add refrence to user addr to server session
-        self.sessions.insert(id, addr);
+        self.sessions.insert(id, addr.clone());
 
         // get/create lobby
         let con = self.redis.get_connection().unwrap();
@@ -175,12 +175,23 @@ impl Handler<Join> for Server {
         let lobby_json = serde_json::to_string(&new_lobby).unwrap();
         let _: () = con.set(&room_name, lobby_json).unwrap();
 
-        // add user to redis channel
-        let handle = self.subscribe(room_name.clone(), ctx.address());
-        // TODO fix so publish happens after successfully subscribed
-        thread::sleep(Duration::from_millis(5));
         // publish updated state of the lobby to redis channel
         let _: () = con.publish(room_name.clone(), "user").unwrap();
+        // update client that joined with lobby
+         let mut message = UserMessage {
+            eventType: "users".to_string(),
+            users: Vec::new(),
+        };
+        for user in new_lobby.users.values() {
+            message.users.push(
+                ClientUser {
+                    name: user.name.clone(),
+                    points: user.points.clone(),
+                }
+            )
+        }
+        let message_string = serde_json::to_string(&message).unwrap();
+        addr.do_send(Message(message_string.to_owned()));
     }
 }
 
@@ -392,7 +403,7 @@ impl Handler<EmitUsers> for Server {
         for (id, _user) in lobby.users {
             match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
-                None => Ok(()) // user is not connected to this server
+                _ => Ok(()) // user is not connected to this server
             };
         }
     }
@@ -422,7 +433,7 @@ impl Handler<EmitGameType> for Server {
         for (id, _user) in lobby.users {
             match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
-                None => Ok(()) // user is not connected to this server
+                _ => Ok(()) // user is not connected to this server
             };
         }
     }
@@ -452,7 +463,7 @@ impl Handler<EmitGameState> for Server {
         for (id, _user) in lobby.users {
             match self.sessions.get(&id) {
                 Some(addr) => addr.do_send(Message(message_string.to_owned())),
-                None => Ok(()) // user is not connected to this server
+                _ => Ok(()) // user is not connected to this server
             };
         }
     }
