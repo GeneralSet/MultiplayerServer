@@ -1,6 +1,7 @@
 version: '3'
 services:
   actix:
+    image: generalset/multiplayer_server:init
     environment:
       - RUST_ENV=docker
       - RUST_LOG=debug
